@@ -1,1 +1,1 @@
-# tsog-x1
+# TSoG X1

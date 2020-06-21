@@ -38,10 +38,10 @@ for i=2:(end_time / dt)
     break;
   endif
 endfor
-
 plot(Results.X, Results.Y)
 xlabel('X position (m)')
 ylabel('Y position (m)')
 set(legend('Trajectory'), "fontsize", 25)
 set(gca, "fontsize", 25)
 grid on
+Save_Var_to_File(Results,"test1")

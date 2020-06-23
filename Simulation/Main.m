@@ -2,12 +2,11 @@
 
 % Object parameters
 Plane.Mass        = 1; % Mass (kg)
-Plane.DragRefArea = 1; % Cross sectional area used for drag (m2)
-Plane.LiftRefArea = 0; % Projected wing area used for lift (m2)
+Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
 Plane.Cd          = 1; % Coefficient of drag (dimensionless)
 Plane.Cl          = 0; % Coefficient of lift (dimensionless)
 
-printf('Terminal velocity: %d m/s\n', sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.DragRefArea)));
+printf('Terminal velocity: %d m/s\n', sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.AeroRefArea)));
 
 % State vector initialization
 % X - distance, Y - height

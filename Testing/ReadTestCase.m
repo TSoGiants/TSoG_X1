@@ -8,14 +8,14 @@ function [FlightInputs] = ReadTestCase(Time, TestCase)
   FlightInputs.Throttle = 0;
   
   % Interpolate the TestCase Pitch Table for the pitch input
-  PitchTableX = TestCase.PitchTable(:,1);
-  PitchTableY = TestCase.PitchTable(:,2);
-  FlightInputs.Pitch = interp1(PitchTableX,PitchTableY,Time);
+  PitchTableTime = TestCase.PitchTable(:,1);
+  PitchTableValue = TestCase.PitchTable(:,2);
+  FlightInputs.Pitch = interp1(PitchTableTime,PitchTableValue,Time);
   
   % Interpolate the TestCase Pitch Table for the pitch input
-  ThrottleTableX = TestCase.ThrottleTable(:,1);
-  ThrottleTableY = TestCase.ThrottleTable(:,2);
-  FlightInputs.Throttle = interp1(ThrottleTableX,ThrottleTableY,Time);
+  ThrottleTableTime = TestCase.ThrottleTable(:,1);
+  ThrottleTableValue = TestCase.ThrottleTable(:,2);
+  FlightInputs.Throttle = interp1(ThrottleTableTime,ThrottleTableValue,Time);
   
   
 endfunction

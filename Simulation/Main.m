@@ -1,5 +1,7 @@
 % Base off of https://github.com/TSoGiants/MECH2103-Computational-Aerodynamics
 
+%File to save to
+results_file = "jun_25"
 % Object parameters
 Plane.Mass = 1;
 
@@ -44,4 +46,4 @@ ylabel('Y position (m)')
 set(legend('Trajectory'), "fontsize", 25)
 set(gca, "fontsize", 25)
 grid on
-Save_Var_to_File(Results,"test6")
+Save_Var_to_File(Results,results_file)

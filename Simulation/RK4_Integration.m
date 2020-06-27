@@ -1,9 +1,9 @@
 % 4th Order Runge-Kutta (RK4) integration
-function StateVector = RK4_Integration(StateVector, Object, dt)
-  k1 = dt * Derivatives(StateVector, Object);
-  k2 = dt * Derivatives(StateVector + k1/2, Object);
-  k3 = dt * Derivatives(StateVector + k2/2, Object);
-  k4 = dt * Derivatives(StateVector + k3, Object);
+function StateVector = RK4_Integration(StateVector, Object, deltat)
+  k1 = deltat * Derivatives(StateVector, Object);
+  k2 = deltat * Derivatives(StateVector + k1/2, Object);
+  k3 = deltat * Derivatives(StateVector + k2/2, Object);
+  k4 = deltat * Derivatives(StateVector + k3, Object);
 fdasdfsdfasdfasda
 asdfasdfasd
 fasdfasd

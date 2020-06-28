@@ -6,20 +6,23 @@ Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynami
 Plane.Cd          = 1; % Coefficient of drag (dimensionless)
 Plane.Cl          = 0; % Coefficient of lift (dimensionless)
 
-printf('Terminal velocity: %d m/s\n', sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.AeroRefArea)));
+printf('Terminal velocity: %d m/s\n', 
+        sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.AeroRefArea)));
 
 % State vector initialization
 % X - distance, Y - height
-P0 = [0, 10]; % Initial position (m)
-V0 = [0, 0]; % Initial velocity (m/s)
+P0 = [0, 10];      % Initial position (m)
+V0 = [0, 0];       % Initial velocity (m/s)
+Orientation = [0]; % Initial orientation, currently just pitch (deg)
 
-StateVector = [P0, V0];
+StateVector = [P0, V0, Orientation];
 
 % Results used for plotting
-Results.X    = StateVector(1);
-Results.Y    = StateVector(2);
-Results.Vx   = StateVector(3);
-Results.Vy   = StateVector(4);
+Results.X     = StateVector(1);
+Results.Y     = StateVector(2);
+Results.Vx    = StateVector(3);
+Results.Vy    = StateVector(4);
+Results.Pitch = StateVector(5);
 Results.Time = 0;
 
 % Simulation parameters
@@ -32,11 +35,12 @@ for i=2:(end_time / dt)
   StateVector = RK4_Integration(StateVector, Plane, dt);
   
   % Save Results
-  Results.X(i)    = StateVector(1);
-  Results.Y(i)    = StateVector(2);
-  Results.Vx(i)   = StateVector(3);
-  Results.Vy(i)   = StateVector(4);
-  Results.Time(i) = dt * (i - 1);
+  Results.X(i)     = StateVector(1);
+  Results.Y(i)     = StateVector(2);
+  Results.Vx(i)    = StateVector(3);
+  Results.Vy(i)    = StateVector(4);
+  Results.Pitch(i) = StateVector(5);
+  Results.Time(i)  = dt * (i - 1);
   
   % Check if object has hit the ground
   if StateVector(2) < ground_height

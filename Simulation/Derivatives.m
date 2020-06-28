@@ -1,4 +1,4 @@
-function StateVector_Dot = Derivatives(StateVector, Object)
+function StateVector_dot = Derivatives(StateVector, Object)
   Velocity = P_dot = StateVector(3:4); % Derivative of position is velocity
   Speed    = norm(Velocity);           % Magnitude of velocity vector
 
@@ -21,7 +21,7 @@ function StateVector_Dot = Derivatives(StateVector, Object)
  
   V_dot = Gravity + F / Object.Mass; % Derivative of velocity is acceleration
 
-  Orientation_dot = [0]; % TODO: Need to add proper math here (torque)
+  O_dot = [0]; % TODO: Need to add proper math here (torque)
   
-  StateVector_Dot = [P_dot, V_dot, Orientation_dot];
+  StateVector_dot = [P_dot, V_dot, O_dot];
 endfunction

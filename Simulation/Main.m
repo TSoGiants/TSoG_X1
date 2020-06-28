@@ -10,10 +10,10 @@ printf('Terminal velocity: %d m/s\n',
         sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.AeroRefArea)));
 
 % State vector initialization
-% X - distance, Y - height
-P0 = [0, 10];      % Initial position (m)
-V0 = [0, 0];       % Initial velocity (m/s)
-Orientation = [0]; % Initial orientation, currently just pitch (deg)
+% X - left/right, Y - up/down
+P0          = [0, 10]; % Initial position (m)
+V0          = [0, 0];  % Initial velocity (m/s)
+Orientation = [0];     % Initial orientation, currently just pitch (deg)
 
 StateVector = [P0, V0, Orientation];
 

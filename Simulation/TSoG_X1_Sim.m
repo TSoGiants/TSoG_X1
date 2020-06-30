@@ -11,8 +11,9 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   if nargin == 0
     TestCase.Name        = 'Default';
     TestCase.Description = 'Default Test Case for X1 Simulation';
-    P0 = [0, 10]; % Initial position (m)
-    V0 = [-2, 0]; % Initial velocity (m/s)
+    % X - left/right, Y - up/down
+    P0 = [0, 10]; % Initial position [X, Y] (m)
+    V0 = [-2, 0]; % Initial velocity [Vx, Vy](m/s)
     O0 = [0];     % Initial Orientation [Pitch] (degrees)
     TestCase.InitialConditions = [P0 V0 O0];
     TestCase.PitchTable =  [0 0;

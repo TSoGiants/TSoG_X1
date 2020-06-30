@@ -9,10 +9,12 @@ TestCase.Name        = 'Template';
 TestCase.Description = 'This test case is a template to edit and create new test cases';
 
 % Establish Initial Conditions of the test
-P0 = [0, 10]; % Initial position (m)
-V0 = [-2, 0]; % Initial velocity (m/s)
+% X - left/right, Y - up/down
+P0 = [0, 10]; % Initial position [X, Y] (m)
+V0 = [-2, 0]; % Initial velocity [Vx, Vy](m/s)
+O0 = [0];     % Initial Orientation [Pitch] (degrees)
 
-StateVector_Initial = [P0 V0];
+StateVector_Initial = [P0 V0 O0];
 TestCase.InitialConditions = StateVector_Initial;
 
 % The pitch table will be linearly interpolated using the simulation time as the independent input

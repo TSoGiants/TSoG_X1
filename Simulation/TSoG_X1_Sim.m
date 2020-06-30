@@ -1,7 +1,7 @@
 % Based off of https://github.com/TSoGiants/MECH2103-Computational-Aerodynamics
 %  TSoG_X1_Sim is the main function to run the X1 simulation. It can be run with
-## or without an input Test Case (the sim will run with default inputs if no Test
-## Case is provided)
+% or without an input Test Case (the sim will run with default inputs if no Test
+% Case is provided)
 
 
 function [ Results ] = TSoG_X1_Sim( TestCase )

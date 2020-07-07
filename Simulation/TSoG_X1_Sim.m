@@ -23,7 +23,6 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                             10 5;
                             10.001 0;
                             15 0];
-    #TestCase.PitchTable(:,1) = TestCase.PitchTable(:,1) / 2;
     TestCase.ThrottleTable = [0 0;
                               2 1;
                               15 1];
@@ -106,7 +105,6 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   plot(Results.Time, Results.Vy);
   hold on;
   plot(Results.Time, Results.AoA);
-
 
   xlabel('Time (s)');
 

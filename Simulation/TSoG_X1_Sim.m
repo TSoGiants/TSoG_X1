@@ -13,7 +13,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     TestCase.Description = 'Default Test Case for X1 Simulation';
     % X - left/right, Y - up/down
     P0 = [0, 10]; % Initial position [X, Y] (m)
-    V0 = [-2, 0]; % Initial velocity [Vx, Vy] (m/s)
+    V0 = [2, 0];  % Initial velocity [Vx, Vy] (m/s)
     O0 = [0];     % Initial orientation [Pitch] (degrees)
 
     TestCase.InitialConditions = [P0 V0 O0];
@@ -73,7 +73,8 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Velocity = StateVector(3:4);
     Pitch    = StateVector(5);
 
-    flight_path_angle = atand(Velocity(2) / Velocity(1));
+    flight_path_angle = atan2d(Velocity(2), Velocity(1));
+
     Plane.AoA = Pitch - flight_path_angle;
 
     % Save Results
@@ -108,7 +109,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
 
   xlabel('Time (s)');
 
-  l = legend('Height (m)', 'Velocity (m/s)', 'AoA (deg)');
+  l = legend('Position Y (m)', 'Velocity Y (m/s)', 'AoA (deg)');
   set(l, 'FontSize', 25);
   set(gca, 'FontSize', 25);
 

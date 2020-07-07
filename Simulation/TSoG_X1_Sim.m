@@ -13,7 +13,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     TestCase.Description = 'Default Test Case for X1 Simulation';
     % X - left/right, Y - up/down
     P0 = [0, 10]; % Initial position [X, Y] (m)
-    V0 = [-2, 0]; % Initial velocity [Vx, Vy] (m/s)
+    V0 = [0, 0]; % Initial velocity [Vx, Vy] (m/s)
     O0 = [0];     % Initial orientation [Pitch] (degrees)
 
     TestCase.InitialConditions = [P0 V0 O0];
@@ -23,6 +23,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                             10 5;
                             10.001 0;
                             15 0];
+    #TestCase.PitchTable(:,1) = TestCase.PitchTable(:,1) / 2;
     TestCase.ThrottleTable = [0 0;
                               2 1;
                               15 1];
@@ -95,12 +96,23 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   %                        Simulation End
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  plot(Results.Time, Results.Y)
-  hold on
-  plot(Results.Time, Results.Vy)
-  xlabel('Time (s)')
-  %ylabel('Y position (m)')
-  set(legend('Trajectory (m)', 'Velocity (m/s)'), "fontsize", 25)
-  set(gca, "fontsize", 25)
-  grid on
+  % Hack that helps with graph scaling
+  figure(1, 'position', [0, 0, 1920, 1000]);
+
+  set(groot, 'DefaultLineLineWidth', 5);
+
+  plot(Results.Time, Results.Y);
+  hold on;
+  plot(Results.Time, Results.Vy);
+  hold on;
+  plot(Results.Time, Results.AoA);
+
+
+  xlabel('Time (s)');
+
+  l = legend('Height (m)', 'Velocity (m/s)', 'AoA (deg)');
+  set(l, 'FontSize', 25);
+  set(gca, 'FontSize', 25);
+
+  grid on;
 endfunction

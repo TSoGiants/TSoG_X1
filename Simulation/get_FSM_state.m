@@ -13,7 +13,8 @@ function next_state = get_FSM_state (state_vector,ground_height,last_state)
     
     %state transition boolean variables
     flying = (height>ground_height) && (v_x>0);
-    crashed =(height<=ground_height);
+    crashed =(height<=ground_height) && (v_y<-5);
+    on_ground = (height<=ground_height) && (v_y>-5) && (v_y<0);
     
     %FSM state transition code
     if last_state == 0 %if the plane is on the ground
@@ -29,6 +30,8 @@ function next_state = get_FSM_state (state_vector,ground_height,last_state)
       %check if the plane has crashed
       if crashed
         next_state = 3;
+      elseif on_ground
+        next_state = 0;
       else
         next_state = 1;
       endif

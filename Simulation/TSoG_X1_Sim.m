@@ -88,7 +88,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.FSM_state(i) = get_FSM_state(StateVector,ground_height,Results.FSM_state(i - 1));
     
     % Check if object has hit the ground
-    if Results.FSM_state(i) == 3
+    if StateVector(2) < ground_height
       printf('Ground hit in %d s\n', Results.Time(end))
       break;
     endif

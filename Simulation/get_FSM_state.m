@@ -2,9 +2,10 @@
 ## Created: 2020-07-12
 % States are enumerated as such:
 % 0 = On the ground safely ==> just the initial state.
+%     when height is <= ground height and the vertical velocity is more than -5m/s
 % 1 = Flying  ==> height is > ground height and v_x is positive
 % 2 = Cruising ==> Still need to define
-% 3 = Crashed ==> when height is <= ground height
+% 3 = Crashed ==> when height is <= ground height and the vertical speed was less than -5m/s
 
 function next_state = get_FSM_state (state_vector,ground_height,last_state)
     height = state_vector(2);
@@ -14,7 +15,7 @@ function next_state = get_FSM_state (state_vector,ground_height,last_state)
     %state transition boolean variables
     flying = (height>ground_height) && (v_x>0);
     crashed =(height<=ground_height) && (v_y<-5);
-    on_ground = (height<=ground_height) && (v_y>-5) && (v_y<0);
+    on_ground = (height<=ground_height) && (v_y>-5);
     
     %FSM state transition code
     if last_state == 0 %if the plane is on the ground

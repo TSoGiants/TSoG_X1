@@ -87,10 +87,16 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.Time(i)  = dt * (i - 1);
 
     % Check if object has hit the ground
-    if StateVector(2) < ground_height
+    [flying,crashed] = get_FSM_state(StateVector,ground_height);
+    if flying
+      disp('plane is flying')
+    endif
+    
+    if crashed
       printf('Ground hit in %d s\n', Results.Time(end))
       break;
     endif
+    
   endfor
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation End

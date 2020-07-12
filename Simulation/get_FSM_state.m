@@ -1,23 +1,39 @@
 ## Author: Aditya Ojha <Aditya Ojha@DESKTOP-CVU5H2C>
 ## Created: 2020-07-12
 % States are enumerated as such:
-% 0 = Crashed ==> when height is <= ground height
+% 0 = On the ground safely ==> just the initial state.
 % 1 = Flying  ==> height is > ground height and v_x is positive
 % 2 = Cruising ==> Still need to define
+% 3 = Crashed ==> when height is <= ground height
 
 function next_state = get_FSM_state (state_vector,ground_height,last_state)
-    if last_state == 0 %if the plane has crashed, it cannot fly anymore.
-      next_state = 0;
-    else
-      %only check if we've crashed      
-      height = state_vector(2);
-      crashed =(height<=ground_height);
-      v_x = state_vector(3);
-      flying = (height>ground_height) && (v_x>0);
+    height = state_vector(2);
+    v_x = state_vector(3);
+    v_y = state_vector(4);
+    
+    %state transition boolean variables
+    flying = (height>ground_height) && (v_x>0);
+    crashed =(height<=ground_height);
+    
+    %FSM state transition code
+    if last_state == 0 %if the plane is on the ground
+      %check if the plane is flying then if its crashed
       if flying
-        next_state = 1; %plane is flying
+        next_state = 1;
       elseif crashed
-        next_state = 0; %plane has crashed
+        next_state = 3;
+      else
+        next_state = 0;
       endif
+    elseif last_state == 1 %if the plane is flying
+      %check if the plane has crashed
+      if crashed
+        next_state = 3;
+      else
+        next_state = 1;
+      endif
+    elseif last_state == 3 %if the plane has crashed
+      %the plane cannot change states;
+      last_state = 3
     endif
 endfunction

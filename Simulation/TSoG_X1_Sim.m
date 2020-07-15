@@ -75,7 +75,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.Vy(i)    = StateVector(4);
     Results.Pitch(i) = StateVector(5);
     Results.Time(i)  = dt * (i - 1);
-    disp(ThrustModel(StateVector))
+    %disp(ThrustModel(StateVector))
     % Check if object has hit the ground
     if StateVector(2) < ground_height
       printf('Ground hit in %d s\n', Results.Time(end))

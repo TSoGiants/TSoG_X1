@@ -87,7 +87,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     
     % Check if object has hit the ground
     if StateVector(2) < ground_height
-      printf('Ground hit in %d s\n', Results.Time(end))
+      disp('Ground hit in ' num2str(Results.Time(end)) ' s');
       if Results.FSM_state(i) == 0
         disp('Plane landed safety')
       else

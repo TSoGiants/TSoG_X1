@@ -83,7 +83,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.Pitch(i) = StateVector(5);
     Results.AoA(i)   = Plane.AoA;
     Results.Time(i)  = dt * (i - 1);
-    Results.FSM_state(i) = get_FSM_state(StateVector,ground_height,Results.FSM_state(i - 1));
+    Results.FSM_state(i) = Get_FSM_State(StateVector,ground_height,Results.FSM_state(i - 1));
     
     % Check if object has hit the ground
     if StateVector(2) < ground_height

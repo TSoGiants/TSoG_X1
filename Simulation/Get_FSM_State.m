@@ -7,15 +7,15 @@
 % 2 = Cruising ==> Still need to define
 % 3 = Crashed ==> when height is <= ground height and the vertical speed was less than -5m/s
 
-function next_state = get_FSM_state (state_vector,ground_height,last_state)
+function next_state = Get_FSM_State (state_vector,ground_height,last_state)
     height = state_vector(2);
     v_x = state_vector(3);
     v_y = state_vector(4);
     
     %state transition boolean variables
-    flying = (height>ground_height) && (v_x>0);
-    crashed =(height<=ground_height) && (v_y<-5);
-    on_ground = (height<=ground_height) && (v_y>-5);
+    flying = (height > ground_height) && (v_x > 0);
+    crashed = (height <= ground_height) && (v_y <= -5);
+    on_ground = (height <= ground_height) && (v_y > -5);
     
     %FSM state transition code
     if last_state == 0 %if the plane is on the ground

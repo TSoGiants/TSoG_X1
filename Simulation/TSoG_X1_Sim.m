@@ -32,12 +32,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   % Object parameters
   Plane.Mass        = 1; % Mass (kg)
   Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
-  Plane.Cd          = 1; % Coefficient of drag (dimensionless)
-  Plane.Cl          = 0; % Coefficient of lift (dimensionless)
   Plane.AoA         = 0; % Angle of Attack (degrees)
 
-  printf('Terminal velocity: %d m/s\n',
-        sqrt((2 * Plane.Mass * 9.81) / (Plane.Cd * 1.225 * Plane.AeroRefArea)));
+  Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
+  Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
 
   % State vector initialization
   % Set the initial conditions to the Test Case initial conditions
@@ -85,11 +83,11 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.Pitch(i) = StateVector(5);
     Results.AoA(i)   = Plane.AoA;
     Results.Time(i)  = dt * (i - 1);
-    Results.FSM_state(i) = get_FSM_state(StateVector,ground_height,Results.FSM_state(i - 1));
+    Results.FSM_state(i) = Get_FSM_State(StateVector,ground_height,Results.FSM_state(i - 1));
     
     % Check if object has hit the ground
     if StateVector(2) < ground_height
-      printf('Ground hit in %d s\n', Results.Time(end))
+      disp('Ground hit in ', num2str(Results.Time(end)), ' s');
       if Results.FSM_state(i) == 0
         disp('Plane landed safety')
       else
@@ -107,6 +105,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
 
   set(groot, 'DefaultLineLineWidth', 5);
 
+  plot(Results.Time, Results.X);
+  hold on;
+  plot(Results.Time, Results.Vx);
+  hold on;
   plot(Results.Time, Results.Y);
   hold on;
   plot(Results.Time, Results.Vy);
@@ -115,7 +117,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
 
   xlabel('Time (s)');
 
-  l = legend('Position Y (m)', 'Velocity Y (m/s)', 'AoA (deg)');
+  l = legend('Postion X (m)', 'Velocity X (m)', 'Position Y (m)', 'Velocity Y (m/s)', 'AoA (deg)');
   set(l, 'FontSize', 25);
   set(gca, 'FontSize', 25);
 

@@ -1,9 +1,12 @@
 function [ Drag, Lift ] = AerodynamicModel(StateVector, Object)
+  Altitude = StateVector(2);
   Velocity = StateVector(3:4);
+
   Speed = norm(Velocity); % Magnitude of velocity vector
   
-  Density = 1.225;                              % Standard air density (kg/m3)
-  Q       = 0.5 * Density * Speed^2;            % Dynamic pressure
+  [_, _, air_density] = AtmosphereModel(Altitude);
+
+  Q       = 0.5 * air_density * Speed^2;                    % Dynamic pressure
   Drag    = Object.AeroRefArea * Object.Cd(Object.AoA) * Q; % Drag force
   Lift    = Object.AeroRefArea * Object.Cl(Object.AoA) * Q; % Lift force
 

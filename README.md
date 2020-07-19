@@ -104,3 +104,29 @@ In order to address the merge conflicts, follow these steps:
 4. To resolve each conflict, manually edit the file to select which changes to keep (
     * If necessary, discuss this with the author of the conflicting changes to make sure nothing is lost during the conflict resolution
 5. After all merge conflicts have been resolved, commit all changes to your issue branch and push to the repository to continue the review process
+
+## Programming Standards
+
+The following is a set of some basic rules to help keep the formatting consistent across all scripts.
+
+### General Script Standards
+
+**Comments**
+* Use the `#` symbol not the `%` symbol for all comments
+
+* Use comments to describe what code is doing as you go. This will help clear up the code's intent to yourself and future users
+
+**Variable Names**
+* Use `UpperCamelCase` for structure and class names, `CAPITALIZED_WITH_UNDERSCORES` for constants, and `lowercase_separated_by_underscores` for other names
+
+* Use capitalized letters for any abbreviations such as `RK4` or `RPM`
+
+**Indentation**
+* Use 2 spaces for indentation, no tabs
+
+### Functions
+* All functions must have a comment section at the beginning with the following:
+  * Full title of the function
+  * Brief overview of the function
+  * If needed, an explanation of how to use the function
+  * Sources (if any) used to develop the function

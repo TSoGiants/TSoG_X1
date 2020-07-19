@@ -1,6 +1,6 @@
 # TSoG X1
 
-This repository is for the TSoG X1 Aircraft Project. The repository is used to develop the simulation and testing needed to aid the design of the aircraft.
+This repository is for the TSoG X1 Aircraft Project. The repository is used to develop the simulation and testing needed to aid the design of the aircraft. The goal of the simulation is to be able to accurately simulate the TSoG X1 Aircraft to be able to predict the performance, size the wings and tail, and set up a platform for further development of aerospace projects. 
 
 The simulation is developed in Octave 5.2.
 

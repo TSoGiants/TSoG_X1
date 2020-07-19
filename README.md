@@ -1,6 +1,6 @@
 # TSoG X1
 
-This repository is for the TSoG X1 Aircraft Project. The repository is used to develop the simulation and testing needed to aid the design of the aircraft. The goal of the simulation is to be able to accurately simulate the TSoG X1 Aircraft to be able to predict the performance, size the wings and tail, and set up a platform for further development of aerospace projects. 
+This repository is for the TSoG X1 Aircraft Project. The repository is used to develop the simulation and testing needed to aid the design of the aircraft. The goal of the simulation is to be able to accurately simulate the TSoG X1 Aircraft to be able to predict the performance, size the wings and tail, and set up a platform for further development of aerospace projects.
 
 The simulation is developed in Octave 5.2.
 
@@ -104,6 +104,26 @@ In order to address the merge conflicts, follow these steps:
 4. To resolve each conflict, manually edit the file to select which changes to keep (
     * If necessary, discuss this with the author of the conflicting changes to make sure nothing is lost during the conflict resolution
 5. After all merge conflicts have been resolved, commit all changes to your issue branch and push to the repository to continue the review process
+
+### 5 Issue Creation
+
+If there is a new feature, fix, or an edit that should be made, an issue should be created for it. Although these are named "Issues", they should be looked at as general
+
+Follow these steps to create a unique issue:
+
+1. Check to see if your issue is not already addressed by a different issue, if no proceed
+2. Create a new issue with a brief title describing the task/problem
+3. Label the issue with the parts of the simulation it will be touching
+    * `Simulation`
+    * `Testing`
+    * `Analysis`
+    * `Documentation`
+4. Label the issue with one of the following appropriate tags:
+    * `Bug`
+    * `New Feature`
+    * `Edit Feature`
+5. If the issue is a small change that can be a good issue for someone new, add the `Small Change` label
+6. If you intend to work on the issue
 
 ## Programming Standards
 

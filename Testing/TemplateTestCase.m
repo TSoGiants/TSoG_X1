@@ -38,6 +38,8 @@ TestCase.StopTime = max([TestCase.ThrottleTable(end,1),TestCase.PitchTable(end,1
 
 %% Run the Test Case through the Aircraft Simulation
 
+TestCase.Plot = @StandardPlots;
+
 % PLACE HOLDER PLOTS UNTIL SIMULATION INPUT IS ADDED
 
 time = 0:0.1:TestCase.StopTime;

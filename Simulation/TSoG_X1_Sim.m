@@ -3,7 +3,6 @@
 % or without an input Test Case (the sim will run with default inputs if no Test
 % Case is provided)
 
-
 function [ Results ] = TSoG_X1_Sim( TestCase )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Setup
@@ -27,6 +26,8 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                               2 1;
                               15 1];
     TestCase.StopTime = 15;
+
+    TestCase.Plot = @StandardPlots;
   endif
 
   % Object parameters
@@ -100,26 +101,5 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   %                        Simulation End
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-  % Hack that helps with graph scaling
-  figure(1, 'position', [0, 0, 1920, 1000]);
-
-  set(groot, 'DefaultLineLineWidth', 5);
-
-  plot(Results.Time, Results.X);
-  hold on;
-  plot(Results.Time, Results.Vx);
-  hold on;
-  plot(Results.Time, Results.Y);
-  hold on;
-  plot(Results.Time, Results.Vy);
-  hold on;
-  plot(Results.Time, Results.AoA);
-
-  xlabel('Time (s)');
-
-  l = legend('Postion X (m)', 'Velocity X (m)', 'Position Y (m)', 'Velocity Y (m/s)', 'AoA (deg)');
-  set(l, 'FontSize', 25);
-  set(gca, 'FontSize', 25);
-
-  grid on;
+  TestCase.Plot(Results)
 endfunction

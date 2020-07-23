@@ -10,12 +10,10 @@ function StandardPlots(Results)
   plot(Results.Time, Results.X);
   hold on;
   plot(Results.Time, Results.Vx);
-  hold on;
   plot(Results.Time, Results.Y);
-  hold on;
   plot(Results.Time, Results.Vy);
-  hold on;
   plot(Results.Time, Results.AoA);
+  hold off;
 
   xlabel('Time (s)');
 

@@ -26,8 +26,6 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                               2 1;
                               15 1];
     TestCase.StopTime = 15;
-
-    TestCase.Plot = @StandardPlots;
   endif
 
   % Object parameters
@@ -100,6 +98,4 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation End
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  TestCase.Plot(Results)
 endfunction

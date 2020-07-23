@@ -37,8 +37,9 @@ TestCase.ThrottleTable = [0 0;
 TestCase.StopTime = max([TestCase.ThrottleTable(end,1),TestCase.PitchTable(end,1)]);
 
 %% Run the Test Case through the Aircraft Simulation
+Results = TSoG_X1_Sim(TestCase);
 
-TestCase.Plot = @StandardPlots;
+StandardPlots(Results)
 
 % PLACE HOLDER PLOTS UNTIL SIMULATION INPUT IS ADDED
 
@@ -50,14 +51,14 @@ for i=1:length(time)
   Throttle(i,1) = FlightInputs.Throttle;
 endfor
 
-figure(1)
+figure(2)
 plot(time,Pitch)
 xlabel('Time (sec)')
 ylabel('Pitch (deg)')
 
 axis([0 max(time) 1.5*min(Pitch) 1.5*max(Pitch)])
 
-figure(2)
+figure(3)
 plot(time,Throttle*100)
 xlabel('Time (sec)')
 ylabel('Throttle (%)')

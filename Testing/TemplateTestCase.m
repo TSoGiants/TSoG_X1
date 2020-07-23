@@ -2,6 +2,9 @@
 %
 % This template will establish the framework for creating test cases
 
+% Run the startup file to set up the `path`
+run('./startup.m');
+
 % Create a short name for the test case
 TestCase.Name        = 'Template';
 

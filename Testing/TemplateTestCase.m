@@ -30,12 +30,19 @@ TestCase.PitchTable =  [0 0;
                         10.001 0;
                         15 0];
 
+% Linear interpolation of Pitch Table
+TestCase.GetPitch = @(time) interp1(TestCase.PitchTable(:,1),TestCase.PitchTable(:,2),time,TestCase.PitchTable(end,2));
+
 % The throttle table will be linearly interpolated using the simulation time as the independent input
 % The first column is time. (Should be monotonically increasing with no repeats)
 % The second column is throttle percentage (1 is 100%)
 TestCase.ThrottleTable = [0 0;
                           2 1;
                           15 1];
+
+% Linear interpolation of Throttle Table
+TestCase.GetThrottle = @(time) interp1(TestCase.ThrottleTable(:,1),TestCase.ThrottleTable(:,2),time,TestCase.ThrottleTable(end,2));
+
 % Calculate the stop time of the test. Simply the largest last input time.
 TestCase.StopTime = max([TestCase.ThrottleTable(end,1),TestCase.PitchTable(end,1)]);
 

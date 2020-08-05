@@ -24,13 +24,13 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                             10.001 0;
                             15 0];
     % Linear interpolation of Pitch Table
-    TestCase.GetPitch = @(time) interp1(TestCase.PitchTable(:,1),TestCase.PitchTable(:,2),time);
+    TestCase.GetPitch = @(time) interp1(TestCase.PitchTable(:,1),TestCase.PitchTable(:,2),time,TestCase.PitchTable(end,2));
 
     TestCase.ThrottleTable = [0 0;
                               2 1;
                               15 1];
     % Linear interpolation of Throttle Table
-    TestCase.GetThrottle = @(time) interp1(TestCase.ThrottleTable(:,1),TestCase.ThrottleTable(:,2),time);
+    TestCase.GetThrottle = @(time) interp1(TestCase.ThrottleTable(:,1),TestCase.ThrottleTable(:,2),time,TestCase.ThrottleTable(end,2));
     TestCase.StopTime = 15;
   endif
   % Set up the master SimData data structure for the simulation

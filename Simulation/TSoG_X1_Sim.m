@@ -35,46 +35,49 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     TestCase.StopTime = 15;
   endif
   % Set up the master SimData data structure for the simulation
+  % Simulation parameters
+  SimData.dt = 0.05;                    % Step time (s)
+  SimData.end_time = TestCase.StopTime; % Simulation end time (s)
+  SimData.ground_height = 0;            % Height of the ground (m)
+  SimData.Time = 0;                     % Simulation Time (s)
+  
   % Test Case sub-structure
   SimData.TestCase = TestCase;
-  % Plane sub-structure
-  SimData.Plane.Mass        = 1; % Mass (kg)
-  SimData.Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
-  SimData.Plane.AoA         = 0; % Angle of Attack (degrees)
-
-  SimData.Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
-  SimData.Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
-
+  
   % State vector initialization
   % Set the initial conditions to the Test Case initial conditions
-
   SimData.StateVector.Position    = [TestCase.InitialConditions(1), TestCase.InitialConditions(2)];
   SimData.StateVector.Velocity    = [TestCase.InitialConditions(3), TestCase.InitialConditions(4)];
   SimData.StateVector.Orientation = [TestCase.InitialConditions(5)];
 
+  % Plane sub-structure
+  SimData.Plane.Mass        = 1; % Mass (kg)
+  SimData.Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
+  flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
+  SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
+  SimData.Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
+  SimData.Plane.Cd          = @(AoA) SimData.Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+
+
+
   % Get initial state of the Plane
   SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
   SimData.Plane.FSM_state = Get_FSM_State(SimData);
-
+  
   % Results used for plotting
   Results.X     = SimData.StateVector.Position(1);
   Results.Y     = SimData.StateVector.Position(2);
   Results.Vx    = SimData.StateVector.Velocity(1);
   Results.Vy    = SimData.StateVector.Velocity(2);
   Results.Pitch = SimData.StateVector.Orientation(1);
-  Results.AoA   = Plane.AoA;
+  Results.AoA   = SimData.Plane.AoA;
   Results.Time  = 0;
   Results.FSM_state = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
-  % Simulation parameters
-  SimData.dt = 0.05;                    % Step time (s)
-  SimData.end_time = TestCase.StopTime; % Simulation end time (s)
-  SimData.ground_height = 0;            % Height of the ground (m)
-  SimData.Time = 0;                     % Simulation Time (s)
-
+  
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Start
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  for i=2:(end_time / dt)
+  for i=2:(SimData.end_time / SimData.dt)
 
     % Integrate next step
     SimData = RK4_Integration(SimData);

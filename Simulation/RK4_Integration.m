@@ -1,5 +1,5 @@
 % 4th Order Runge-Kutta (RK4) integration
-function StateVector = RK4_Integration(SimData)
+function SimData = RK4_Integration(SimData)
 
     dt = SimData.dt;
 
@@ -51,7 +51,7 @@ function StateVector = RK4_Integration(SimData)
 
     % Update FSM State of Plane
     SimData.Plane.FSM_state = Get_FSM_State(SimData);
-    flight_path_angle = atan2d(Velocity(2), Velocity(1));
+    flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
     SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
 
 endfunction

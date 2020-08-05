@@ -13,7 +13,7 @@ function next_state = Get_FSM_State (SimData)
     v_y = SimData.StateVector.Velocity(2);
 
     ground_height = SimData.ground_height;
-    last_state    = SimData.Plane.FSM_state
+    last_state    = SimData.Plane.FSM_state;
 
     %state transition boolean variables
     flying = (height > ground_height) && (v_x > 0);

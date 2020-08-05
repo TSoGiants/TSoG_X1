@@ -1,9 +1,11 @@
-function [ Drag, Lift ] = AerodynamicModel(StateVector, Object)
-  Altitude = StateVector(2);
-  Velocity = StateVector(3:4);
+function [ Drag, Lift ] = AerodynamicModel(SimData)
+  Altitude = SimData.StateVector.Position(2);
+  Velocity = SimData.StateVector.Velocity;
+
+  Object = SimData.Plane;
 
   Speed = norm(Velocity); % Magnitude of velocity vector
-  
+
   [_, _, air_density] = AtmosphereModel(Altitude);
 
   Q       = 0.5 * air_density * Speed^2;                    % Dynamic pressure

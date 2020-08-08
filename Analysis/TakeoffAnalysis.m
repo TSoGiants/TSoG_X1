@@ -20,4 +20,4 @@ TakeoffSpeed = sqrt(Weight / (Plane.AeroRefArea * Plane.Cl(Plane.AoA) * 0.5 * ai
 
 % TODO: Calculate takeoff distance using the simulation.
 
-printf('Takeoff speed: %.2f m/s (%.2f kmh)\n', TakeoffSpeed, TakeoffSpeed * 3.6);
+printf('Takeoff speed: %.2f m/s (%.2f km/h)\n', TakeoffSpeed, TakeoffSpeed * 3.6);

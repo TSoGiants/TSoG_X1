@@ -23,14 +23,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                             10 5;
                             10.001 0;
                             15 0];
-    % Linear interpolation of Pitch Table
-    TestCase.GetPitch = @(time) interp1(TestCase.PitchTable(:,1),TestCase.PitchTable(:,2),time,TestCase.PitchTable(end,2));
 
     TestCase.ThrottleTable = [0 0;
                               2 1;
                               15 1];
-    % Linear interpolation of Throttle Table
-    TestCase.GetThrottle = @(time) interp1(TestCase.ThrottleTable(:,1),TestCase.ThrottleTable(:,2),time,TestCase.ThrottleTable(end,2));
     TestCase.StopTime = 15;
   endif
   % Set up the master SimData data structure for the simulation
@@ -39,10 +35,14 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.end_time = TestCase.StopTime; % Simulation end time (s)
   SimData.ground_height = 0;            % Height of the ground (m)
   SimData.Time = 0;                     % Simulation Time (s)
-  
+
   % Test Case sub-structure
   SimData.TestCase = TestCase;
-  
+  % Linear interpolation of Pitch Table
+  SimData.TestCase.GetPitch = @(time) interp1(TestCase.PitchTable(:,1),TestCase.PitchTable(:,2),time,TestCase.PitchTable(end,2));
+  % Linear interpolation of Throttle Table
+  SimData.TestCase.GetThrottle = @(time) interp1(TestCase.ThrottleTable(:,1),TestCase.ThrottleTable(:,2),time,TestCase.ThrottleTable(end,2));
+
   % State vector initialization
   % Set the initial conditions to the Test Case initial conditions
   SimData.StateVector.Position    = [TestCase.InitialConditions(1), TestCase.InitialConditions(2)];
@@ -57,12 +57,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
   SimData.Plane.Cd          = @(AoA) SimData.Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
 
-
-
   % Get initial state of the Plane
   SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
   SimData.Plane.FSM_state = Get_FSM_State(SimData);
-  
+
   % Results used for plotting
   Results.X     = SimData.StateVector.Position(1);
   Results.Y     = SimData.StateVector.Position(2);
@@ -72,7 +70,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   Results.AoA   = SimData.Plane.AoA;
   Results.Time  = 0;
   Results.FSM_state = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
-  
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Start
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -4,9 +4,9 @@ function SimData = RK4_Integration(SimData)
     dt = SimData.dt;
 
     % Initialize with zeroed delta
-    k0.P_delta = [0,0]; % Position Derivative
-    k0.V_delta = [0,0]; % Velocity Derivative
-    k0.O_delta = [0];   % Orientation Derivative
+    k0.P_dot = [0,0]; % Position Derivative
+    k0.V_dot = [0,0]; % Velocity Derivative
+    k0.O_dot = [0];   % Orientation Derivative
     k0.Time    = SimData.Time;
 
     % Calculate the k1 delta

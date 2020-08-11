@@ -49,24 +49,16 @@ StandardPlots(Results)
 
 % PLACE HOLDER PLOTS UNTIL SIMULATION INPUT IS ADDED
 
-time = 0:0.1:TestCase.StopTime;
-
-for i=1:length(time)
-  FlightInputs = ReadTestCase(time(i),TestCase);
-  Pitch(i,1) = FlightInputs.Pitch;
-  Throttle(i,1) = FlightInputs.Throttle;
-endfor
-
 figure(2)
-plot(time,Pitch)
+plot(Results.Time,Results.PitchInput)
 xlabel('Time (sec)')
 ylabel('Pitch (deg)')
 
-axis([0 max(time) 1.5*min(Pitch) 1.5*max(Pitch)])
+axis([0 max(time) 1.5*min(Results.PitchInput) 1.5*max(Results.PitchInput)])
 
 figure(3)
-plot(time,Throttle*100)
+plot(Results.Time,Results.ThrottleInput*100)
 xlabel('Time (sec)')
 ylabel('Throttle (%)')
 
-axis([0 max(time) 0 100])
+axis([0 max(time) -10 110])

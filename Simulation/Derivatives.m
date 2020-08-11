@@ -1,10 +1,11 @@
-function kOut = Derivatives(kn, SimData)
-    % Add k Deltas to the current SimData
-    SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_delta;
-    SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_delta;
-    SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_delta;
+function kOut = Derivatives(kn, SimData, weight)
+  dt = SimData.dt;
+  % Add k Deltas to the current SimData
+  SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_dot*dt*weight;
+  SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight;
+  SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_dot*dt*weight;
 
-    % Acceleration due to gravity
+  % Acceleration due to gravity
 
   Gravity = [0, -9.81];
 
@@ -24,5 +25,7 @@ function kOut = Derivatives(kn, SimData)
   kOut.V_dot = Gravity + F / SimData.Plane.Mass; % Derivative of velocity is acceleration
 
   kOut.O_dot = [0]; % TODO: Need to add proper math here (torque)
+
+  kOut.Time = SimData.Time + dt*weight;
 
 endfunction

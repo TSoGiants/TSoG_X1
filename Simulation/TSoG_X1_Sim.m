@@ -69,7 +69,9 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   Results.Pitch = SimData.StateVector.Orientation(1);
   Results.AoA   = SimData.Plane.AoA;
   Results.Time  = 0;
-  Results.FSM_state = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
+  Results.FSM_state     = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
+  Results.PitchInput    = SimData.TestCase.GetPitch(SimData.Time);
+  Results.ThrottleInput = SimData.TestCase.GetThrottle(SimData.Time);
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Start
@@ -88,7 +90,9 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.Pitch(i) = SimData.StateVector.Orientation(1);
     Results.AoA(i)   = SimData.Plane.AoA;
     Results.Time(i)  = SimData.Time;
-    Results.FSM_state(i) = SimData.Plane.FSM_state;
+    Results.FSM_state(i)     = SimData.Plane.FSM_state;
+    Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
+    Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
 
     % Check if object has crashed
     if SimData.Plane.FSM_state == 3

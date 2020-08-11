@@ -10,35 +10,20 @@ function SimData = RK4_Integration(SimData)
     k0.Time    = SimData.Time;
 
     % Calculate the k1 delta
-    k1_derivative = Derivatives(k0,SimData);
-    k1.P_delta = k1_derivative.P_dot*dt*0.5;
-    k1.V_delta = k1_derivative.V_dot*dt*0.5;
-    k1.O_delta = k1_derivative.O_dot*dt*0.5;
-    k1.Time    = SimData.Time + dt*0.5;
+    k1 = Derivatives(k0,SimData,0.5);
 
     % Calculate the k2 delta
-    k2_derivative = Derivatives(k1, SimData);
-    k2.P_delta = k2_derivative.P_dot*dt*0.5;
-    k2.V_delta = k2_derivative.V_dot*dt*0.5;
-    k2.O_delta = k2_derivative.O_dot*dt*0.5;
-    k2.Time    = SimData.Time + dt*0.5;
+    k2 = Derivatives(k1, SimData,0.5);
 
     % Calculate the k3 delta
-    k3_derivative = Derivatives(k2, SimData);
-    k3.P_delta = k3_derivative.P_dot*dt;
-    k3.V_delta = k3_derivative.V_dot*dt;
-    k3.O_delta = k3_derivative.O_dot*dt;
-    k3.Time    = SimData.Time + dt;
+    k3 = Derivatives(k2, SimData,1);
 
     % Calculate the k4 delta
-    k4_derivative = Derivatives(k3, SimData);
-    k4.P_delta = k4_derivative.P_dot*dt;
-    k4.V_delta = k4_derivative.V_dot*dt;
-    k4.O_delta = k4_derivative.O_dot*dt;
+    k4 = Derivatives(k3, SimData,1);
 
-    avg_delta.P_delta = (k1.P_delta + 2*k2.P_delta + 2*k3.P_delta + k4.P_delta)/6;
-    avg_delta.V_delta = (k1.V_delta + 2*k2.V_delta + 2*k3.V_delta + k4.V_delta)/6;
-    avg_delta.O_delta = (k1.O_delta + 2*k2.O_delta + 2*k3.O_delta + k4.O_delta)/6;
+    avg_delta.P_delta = dt*(k1.P_dot + 2*k2.P_dot + 2*k3.P_dot + k4.P_dot)/6;
+    avg_delta.V_delta = dt*(k1.V_dot + 2*k2.V_dot + 2*k3.V_dot + k4.V_dot)/6;
+    avg_delta.O_delta = dt*(k1.O_dot + 2*k2.O_dot + 2*k3.O_dot + k4.O_dot)/6;
 
     % Update Simulation Time
     SimData.Time = SimData.Time + dt;

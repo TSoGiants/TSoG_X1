@@ -3,7 +3,7 @@
 % or without an input Test Case (the sim will run with default inputs if no Test
 % Case is provided)
 
-function [ Results ] = TSoG_X1_Sim( TestCase )
+function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Setup
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,6 +29,15 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
                               15 1];
     TestCase.StopTime = 15;
   endif
+
+  if nargin ~= 2
+    % Default plane sub-structure
+    Plane.Mass        = 1; % Mass (kg)
+    Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
+    Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
+    Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+  endif
+
   % Set up the master SimData data structure for the simulation
   % Simulation parameters
   SimData.dt = 0.05;                    % Step time (s)
@@ -49,13 +58,11 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.StateVector.Velocity    = [TestCase.InitialConditions(3), TestCase.InitialConditions(4)];
   SimData.StateVector.Orientation = [TestCase.InitialConditions(5)];
 
-  % Plane sub-structure
-  SimData.Plane.Mass        = 1; % Mass (kg)
-  SimData.Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
+  % Plane sub-structure 
   flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
-  SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
-  SimData.Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
-  SimData.Plane.Cd          = @(AoA) SimData.Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+  Plane.AoA         = SimData.StateVector.Orientation(1) - flight_path_angle;
+
+  SimData.Plane = Plane;
 
   % Get initial state of the Plane
   SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update

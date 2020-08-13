@@ -5,7 +5,7 @@
 %https://www.electricrcaircraftguy.com/2014/04/propeller-static-dynamic-thrust-equation-background.html
 %This function returns an array of Thrust in the x and y directions
 
-function Thrust = ThrustModel(StateVector, Throttle)
+function Thrust = ThrustModel(SimData)
   %constants we get from propeller 
   diameter = 6; %inches
   pitch = 3; %inches (how far forward propeller moves in one rotation
@@ -18,12 +18,13 @@ function Thrust = ThrustModel(StateVector, Throttle)
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   
   %calculated values
-  airspeed = sqrt(StateVector(3)^2 + StateVector(4)^2);
+  airspeed = norm(SimData.StateVector.Velocity);
+  Throttle = SimData.TestCase.GetThrottle(SimData.Time);
   RPM = Max_Volt*Kv*Throttle;%use Throttle to scale down the max RPM 
-  Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed)%calculate thrust (based on model in excel file)
+  Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
   
   %Calculate X,Y directions
-  Pitch = StateVector(5); %this is an angle in degrees
+  Pitch = SimData.TestCase.GetPitch(SimData.Time); %this is an angle in degrees
   Thrust_x = Thrust*cosd(Pitch);
   Thrust_y = Thrust*sind(Pitch);
   %Return value

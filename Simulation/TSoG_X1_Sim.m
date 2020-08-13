@@ -93,7 +93,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.FSM_state(i)     = SimData.Plane.FSM_state;
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
     Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
-
+    disp(ThrustModel(SimData))
     % Check if object has crashed
     if SimData.Plane.FSM_state == 3
         disp('Ground hit in ', num2str(Results.Time(end)), ' s');

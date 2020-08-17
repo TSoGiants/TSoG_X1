@@ -35,7 +35,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.end_time = TestCase.StopTime; % Simulation end time (s)
   SimData.ground_height = 0;            % Height of the ground (m)
   SimData.Time = 0;                     % Simulation Time (s)
-
+  SimData.battery_status = 1300         % Status of the battery is (mAh)
   % Test Case sub-structure
   SimData.TestCase = TestCase;
   % Linear interpolation of Pitch Table
@@ -56,7 +56,14 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
   SimData.Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
   SimData.Plane.Cd          = @(AoA) SimData.Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
-
+  #to find the aoa of the propellor:
+  #Take the pitch and subtract the angle made by the airspeed and rotation of the blade
+  #To find the speed of the blade I took RPM and multiplied it by half the diameter of the propellor (in meters)
+  SimData.Prop.Diameter = 6; #inches
+  SimData.Prop.Max_Volt = 11.1; #volts
+  SimData.Prop.Kv = 2280; #RPM per volt
+  SimData.Prop.RPM = @(Throttle) SimData.Prop.Max_Volt*SimData.Prop.Kv*Throttle;
+  SimData.Prop.AoA = get_Prop_AOA(SimData)
   % Get initial state of the Plane
   SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
   SimData.Plane.FSM_state = Get_FSM_State(SimData);
@@ -93,7 +100,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     Results.FSM_state(i)     = SimData.Plane.FSM_state;
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
     Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
-    disp(ThrustModel(SimData))
+    SimData.Prop.AoA(i) = get_Prop_AOA(SimData)
     % Check if object has crashed
     if SimData.Plane.FSM_state == 3
         disp('Ground hit in ', num2str(Results.Time(end)), ' s');

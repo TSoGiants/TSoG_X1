@@ -23,6 +23,16 @@ function Thrust = ThrustModel(SimData)
   RPM = Max_Volt*Kv*Throttle;%use Throttle to scale down the max RPM 
   Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
   
+  %Battery Calculations
+  [Drag,Lift] = AerodynamicModel(SimData)
+  Pitch = SimData.TestCase.GetPitch(SimData.Time); %this is an angle in degrees
+  aoa = SimData.Prop.AoA;
+  Torque = Drag*cosd(aoa) + Lift*cosd(90-aoa);
+  current = RPM* Torque / Max_Volt
+  current_dt = current * SimData.Time/3600 %in mA * hours
+  %now I need to get the current current
+  
+  
   %Calculate X,Y directions
   Pitch = SimData.TestCase.GetPitch(SimData.Time); %this is an angle in degrees
   Thrust_x = Thrust*cosd(Pitch);

@@ -30,40 +30,41 @@ TestCase.PitchTable =  [0 0;
                         10.001 0;
                         15 0];
 
+
 % The throttle table will be linearly interpolated using the simulation time as the independent input
 % The first column is time. (Should be monotonically increasing with no repeats)
 % The second column is throttle percentage (1 is 100%)
 TestCase.ThrottleTable = [0 0;
                           2 1;
                           15 1];
+
+
 % Calculate the stop time of the test. Simply the largest last input time.
 TestCase.StopTime = max([TestCase.ThrottleTable(end,1),TestCase.PitchTable(end,1)]);
 
+% Example of a custom Plane structure
+Plane.Mass        = 0.3; % Mass (kg)
+Plane.AeroRefArea = 0.05; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
+Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
+Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+
 %% Run the Test Case through the Aircraft Simulation
-Results = TSoG_X1_Sim(TestCase);
+Results = TSoG_X1_Sim(TestCase, Plane);
 
 StandardPlots(Results)
 
 % PLACE HOLDER PLOTS UNTIL SIMULATION INPUT IS ADDED
 
-time = 0:0.1:TestCase.StopTime;
-
-for i=1:length(time)
-  FlightInputs = ReadTestCase(time(i),TestCase);
-  Pitch(i,1) = FlightInputs.Pitch;
-  Throttle(i,1) = FlightInputs.Throttle;
-endfor
-
 figure(2)
-plot(time,Pitch)
+plot(Results.Time,Results.PitchInput)
 xlabel('Time (sec)')
 ylabel('Pitch (deg)')
 
-axis([0 max(time) 1.5*min(Pitch) 1.5*max(Pitch)])
+axis([0 max(time) 1.5*min(Results.PitchInput) 1.5*max(Results.PitchInput)])
 
 figure(3)
-plot(time,Throttle*100)
+plot(Results.Time,Results.ThrottleInput*100)
 xlabel('Time (sec)')
 ylabel('Throttle (%)')
 
-axis([0 max(time) 0 100])
+axis([0 max(time) -10 110])

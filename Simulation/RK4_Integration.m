@@ -28,6 +28,12 @@ function SimData = RK4_Integration(SimData)
     % Update Simulation Time
     SimData.Time = SimData.Time + dt;
 
+    % Reset the altitude when we are on the ground to prevent the plane from 
+    % going very slightly below the ground due to the discreteness of the simulation
+    if SimData.Plane.FSM_state == 0
+        SimData.StateVector.Position(2) = SimData.ground_height;
+    endif
+
     % Update SimData with averaged k Deltas
     SimData.StateVector.Position    = SimData.StateVector.Position + avg_delta.P_delta;
     SimData.StateVector.Velocity    = SimData.StateVector.Velocity + avg_delta.V_delta;

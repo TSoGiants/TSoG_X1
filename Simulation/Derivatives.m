@@ -26,8 +26,8 @@ function kOut = Derivatives(kn, SimData, weight)
 
   % Do not apply downward acceleration or velocity when on ground
   if SimData.Plane.FSM_state == 0
-    kOut.P_dot(2) = 0;
-    kOut.V_dot(2) = 0;
+    kOut.P_dot(2) = max(0, kOut.P_dot(2));
+    kOut.V_dot(2) = max(0, kOut.V_dot(2));
   endif
 
   kOut.O_dot = [0]; % TODO: Need to add proper math here (torque)

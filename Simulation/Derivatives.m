@@ -2,7 +2,7 @@ function kOut = Derivatives(kn, SimData, weight)
   dt = SimData.dt;
   % Add k Deltas to the current SimData
   SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_dot*dt*weight;
-  SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight;
+  SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight + ThrustModel(SimData);
   SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_dot*dt*weight;
 
   % Acceleration due to gravity

@@ -85,6 +85,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
     SimData = RK4_Integration(SimData);
     
     Thrust = ThrustModel(SimData,Results,i);
+    
     % Save Results
     Results.X(i)     = SimData.StateVector.Position(1);
     Results.Y(i)     = SimData.StateVector.Position(2);

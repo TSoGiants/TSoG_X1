@@ -2,9 +2,9 @@ function kOut = Derivatives(kn, SimData, weight)
   dt = SimData.dt;
   % Add k Deltas to the current SimData
   SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_dot*dt*weight;
-  SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight + ThrustModel(SimData);
+  SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight;
   SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_dot*dt*weight;
-
+  
   % Acceleration due to gravity
 
   Gravity = [0, -9.81];
@@ -17,8 +17,13 @@ function kOut = Derivatives(kn, SimData, weight)
   SimData.Plane.AoA = Pitch - flight_path_angle;
 
   [Drag, Lift] = AerodynamicModel(SimData);
-
-  F = Drag + Lift; % Net force on the object
+  
+  Thrust = ThrustModel(SimData);
+  
+  battery_update = Thrust(3);
+  
+  Thrust = [Thrust(1),Thrust(2)];
+  F = Drag + Lift + Thrust; % Net force on the object Commented out b/c Thrust causes imaginary numbers
 
   kOut.P_dot = SimData.StateVector.Velocity;
 
@@ -27,5 +32,7 @@ function kOut = Derivatives(kn, SimData, weight)
   kOut.O_dot = [0]; % TODO: Need to add proper math here (torque)
 
   kOut.Time = SimData.Time + dt*weight;
+  
+  kOut.battery_update = battery_update;
 
 endfunction

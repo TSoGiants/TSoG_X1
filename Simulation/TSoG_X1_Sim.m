@@ -36,8 +36,13 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
   SimData.ground_height = 0;            % Height of the ground (m)
   SimData.Time = 0;                     % Simulation Time (s)
   
+  
+  %Battery Variables
   SimData.battery_status = 1300;       %Current Status of the battery is (mAh)
   SimData.battery_total_cap = 1300; %Total capacity of battery in (mAh)
+  SimData.battery_ratio = SimData.battery_status/SimData.battery_total_cap; %ratio between current battery capacity and full capacity (dimensionless)
+  SimData.battery_update = 0; %change in battery capacity in mAh
+  
   
   % Test Case sub-structure
   SimData.TestCase = TestCase;
@@ -83,21 +88,23 @@ function [ Results ] = TSoG_X1_Sim( TestCase )
 
     % Integrate next step
     SimData = RK4_Integration(SimData);
-    
-    Thrust = ThrustModel(SimData,Results,i);
-    
+    %x = ThrustModel(SimData)  
     % Save Results
     Results.X(i)     = SimData.StateVector.Position(1);
     Results.Y(i)     = SimData.StateVector.Position(2);
-    Results.Vx(i)    = SimData.StateVector.Velocity(1) + (Thrust(1)/SimData.Plane.Mass);
-    Results.Vy(i)    = SimData.StateVector.Velocity(2) + (Thrust(2)/SimData.Plane.Mass);
+    Results.Vx(i)    = SimData.StateVector.Velocity(1);
+    Results.Vy(i)    = SimData.StateVector.Velocity(2);
     Results.Pitch(i) = SimData.StateVector.Orientation(1);
     Results.AoA(i)   = SimData.Plane.AoA;
     Results.Time(i)  = SimData.Time;
     Results.FSM_state(i)     = SimData.Plane.FSM_state;
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
-    Results.ThrottleInput(i) = (Results.battery_status(i-1)/SimData.battery_total_cap)*SimData.TestCase.GetThrottle(SimData.Time);
-    Results.battery_status(i) = Results.battery_status(i-1)-Thrust(3);
+    Results.ThrottleInput(i) = SimData.battery_ratio*SimData.TestCase.GetThrottle(SimData.Time);
+    
+    #updates on battery for the next iteration
+    Results.battery_status(i) = Results.battery_status(i-1) - SimData.battery_update;
+    SimData.battery_ratio = Results.battery_status(i) / SimData.battery_total_cap;
+    
     % Check if object has crashed
     if SimData.Plane.FSM_state == 3
         disp('Ground hit in ', num2str(Results.Time(end)), ' s');

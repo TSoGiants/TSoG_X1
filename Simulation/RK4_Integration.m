@@ -8,7 +8,7 @@ function SimData = RK4_Integration(SimData)
     k0.V_dot = [0,0]; % Velocity Derivative thrust here 
     k0.O_dot = [0];   % Orientation Derivative
     k0.Time    = SimData.Time;
-
+    %x = ThrustModel(SimData)
     % Calculate the k1 delta
     k1 = Derivatives(k0,SimData,0.5);
 
@@ -38,5 +38,7 @@ function SimData = RK4_Integration(SimData)
     SimData.Plane.FSM_state = Get_FSM_State(SimData);
     flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
     SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
+    
+    SimData.battery_update = k4.battery_update;
 
 endfunction

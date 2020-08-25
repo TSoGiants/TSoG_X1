@@ -42,8 +42,14 @@ TestCase.ThrottleTable = [0 0;
 % Calculate the stop time of the test. Simply the largest last input time.
 TestCase.StopTime = max([TestCase.ThrottleTable(end,1),TestCase.PitchTable(end,1)]);
 
+% Example of a custom Plane structure
+Plane.Mass        = 0.3; % Mass (kg)
+Plane.AeroRefArea = 0.05; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
+Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
+Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+
 %% Run the Test Case through the Aircraft Simulation
-Results = TSoG_X1_Sim(TestCase);
+Results = TSoG_X1_Sim(TestCase, Plane);
 
 StandardPlots(Results)
 

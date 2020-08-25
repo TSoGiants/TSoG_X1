@@ -36,7 +36,7 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   else
     current = Power / (voltage); %in amps
   endif
-  B_dot = (current*1000); % Battery Drain (mA)
+  B_dot = (current*1000)/3600; % Battery Drain (mAh/s)
 
   %Calculate X,Y directions
   Pitch = SimData.StateVector.Orientation; %this is an angle in degrees

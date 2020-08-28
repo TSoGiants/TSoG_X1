@@ -13,6 +13,7 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   Max_Volt = 4.2; % Volts
   Min_Volt = 3.2; % Volts
   Avg_Volt = (Max_Volt + Min_Volt)/2; % Volts
+  Max_Current = 20; % Amps, estimated based on speed controller max (20 Amps)
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %Note that Kv*Max_Volt = Max Theoretical RPM.
@@ -30,7 +31,7 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
 
   #Calculations to update battery
-  Power = Thrust * airspeed;
+  Power = Thrust * Avg_Volt * Max_Current; % Estimated power consumption assuming linear power usage based on Throttle
   if(voltage == 0)
     current = 0;
   else

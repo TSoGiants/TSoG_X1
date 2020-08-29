@@ -36,6 +36,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
     Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
     Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+    
+    % Battery Information
+    Plane.MaxBatteryCap = 850; % mAh
+    Plane.BatteryCap = Plane.MaxBatteryCap; % Current Battery Cap
   endif
 
   % Set up the master SimData data structure for the simulation
@@ -44,14 +48,6 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   SimData.end_time = TestCase.StopTime; % Simulation end time (s)
   SimData.ground_height = 0;            % Height of the ground (m)
   SimData.Time = 0;                     % Simulation Time (s)
-  
-  
-  %Battery Variables
-  SimData.battery_status = 1300;       %Current Status of the battery is (mAh)
-  SimData.battery_total_cap = 1300; %Total capacity of battery in (mAh)
-  SimData.battery_ratio = SimData.battery_status/SimData.battery_total_cap; %ratio between current battery capacity and full capacity (dimensionless)
-  SimData.battery_update = 0; %change in battery capacity in mAh
-  
   
   % Test Case sub-structure
   SimData.TestCase = TestCase;
@@ -87,7 +83,8 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   Results.FSM_state     = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
   Results.PitchInput    = SimData.TestCase.GetPitch(SimData.Time);
   Results.ThrottleInput = SimData.TestCase.GetThrottle(SimData.Time);
-  Results.battery_status = SimData.battery_status;
+  Results.BatteryCap    = SimData.Plane.BatteryCap;
+  Results.MaxBatteryCap = SimData.Plane.MaxBatteryCap;
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Start
@@ -107,11 +104,11 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Results.Time(i)  = SimData.Time;
     Results.FSM_state(i)     = SimData.Plane.FSM_state;
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
-    Results.ThrottleInput(i) = SimData.battery_ratio*SimData.TestCase.GetThrottle(SimData.Time);
+    Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
     
     #updates on battery for the next iteration
-    Results.battery_status(i) = Results.battery_status(i-1) - SimData.battery_update;
-    SimData.battery_ratio = Results.battery_status(i) / SimData.battery_total_cap;
+    Results.BatteryCap(i)    = SimData.Plane.BatteryCap;
+    Results.MaxBatteryCap(i) = SimData.Plane.MaxBatteryCap;
     
     % Check if object has crashed
     if SimData.Plane.FSM_state == 3

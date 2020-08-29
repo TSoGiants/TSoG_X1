@@ -41,12 +41,11 @@ function SimData = RK4_Integration(SimData)
     SimData.StateVector.Velocity    = SimData.StateVector.Velocity + avg_delta.V_delta;
     % Pitch is controlled here so we just map it from the test case
     SimData.StateVector.Orientation(1) = SimData.TestCase.GetPitch(SimData.Time);
+    SimData.Plane.BatteryCap        = max(0,SimData.Plane.BatteryCap + avg_delta.B_delta);
 
     % Update FSM State of Plane
     SimData.Plane.FSM_state = Get_FSM_State(SimData);
     flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
     SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
-
-    SimData.battery_update = k4.battery_update;
 
 endfunction

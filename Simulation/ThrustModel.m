@@ -21,15 +21,17 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   %%How to get Throttle:
-  battery_cap_percent = SimData.Plane.Cap/SimData.Plane.MaxCap;
   Throttle = SimData.TestCase.GetThrottle(SimData.Time);
-  diff_Volt = Max_Volt - Min_Volt
   voltage = Avg_Volt*Throttle; % Voltage sent to the motor
-  airspeed = norm(SimData.StateVector.Velocity)#linear velocity of plane in x,y plane
+  airspeed = norm(SimData.StateVector.Velocity);
   RPM = Kv*voltage;%RPM based on Kv and Voltage
-
-  Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
-
+  
+  if SimData.Plane.BatteryCap == 0
+    Thrust = 0;
+  else
+    Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
+  endif
+    
   #Calculations to update battery
   Power = Thrust * Avg_Volt * Max_Current; % Estimated power consumption assuming linear power usage based on Throttle
   if(voltage == 0)
@@ -37,7 +39,7 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   else
     current = Power / (voltage); %in amps
   endif
-  B_dot = (current*1000)/3600; % Battery Drain (mAh/s)
+  B_dot = -(current*1000)/3600; % Battery Drain (mAh/s)
 
   %Calculate X,Y directions
   Pitch = SimData.StateVector.Orientation; %this is an angle in degrees

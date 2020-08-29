@@ -6,6 +6,7 @@ function kOut = Derivatives(kn, SimData, weight)
   SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_dot*dt*weight;
   SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight;
   SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_dot*dt*weight;
+  SimData.Plane.BatteryCap        = max(0,SimData.Plane.BatteryCap + kn.B_dot*dt*weight);
 
   % Acceleration due to gravity
   Gravity = [0, -9.81];

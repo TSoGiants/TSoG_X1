@@ -25,7 +25,7 @@ function kOut = Derivatives(kn, SimData, weight)
   kOut.V_dot = Gravity + F / SimData.Plane.Mass; % Derivative of velocity is acceleration
 
   % Do not apply downward acceleration or velocity when on ground
-  if SimData.Plane.FSM_state == 0
+  if SimData.Plane.FSM_state == FSMStates.OnGround
     kOut.P_dot(2) = max(0, kOut.P_dot(2));
     kOut.V_dot(2) = max(0, kOut.V_dot(2));
   endif

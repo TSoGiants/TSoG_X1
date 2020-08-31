@@ -30,7 +30,7 @@ function SimData = RK4_Integration(SimData)
 
     % Reset the altitude when we are on the ground to prevent the plane from 
     % going very slightly below the ground due to the discreteness of the simulation
-    if SimData.Plane.FSM_state == 0
+    if SimData.Plane.FSM_state == FSMStates.OnGround
         SimData.StateVector.Position(2) = SimData.ground_height;
     endif
 
@@ -41,7 +41,7 @@ function SimData = RK4_Integration(SimData)
     SimData.StateVector.Orientation(1) = SimData.TestCase.GetPitch(SimData.Time);
 
     % Update FSM State of Plane
-    SimData.Plane.FSM_state = Get_FSM_State(SimData);
+    SimData.Plane.FSM_state = GetFSMState(SimData);
     flight_path_angle = atan2d(SimData.StateVector.Velocity(2), SimData.StateVector.Velocity(1));
     SimData.Plane.AoA = SimData.StateVector.Orientation(1) - flight_path_angle;
 

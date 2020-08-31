@@ -66,7 +66,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
 
   % Get initial state of the Plane
   SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
-  SimData.Plane.FSM_state = Get_FSM_State(SimData);
+  SimData.Plane.FSM_state = GetFSMState(SimData);
 
   % Results used for plotting
   Results.X     = SimData.StateVector.Position(1);

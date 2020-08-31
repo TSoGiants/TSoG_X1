@@ -7,7 +7,7 @@
 % 2 = Cruising ==> Still need to define
 % 3 = Crashed ==> when height is <= ground height and the vertical speed was less than -5m/s
 
-function next_state = Get_FSM_State (SimData)
+function next_state = GetFSMState(SimData)
     height = SimData.StateVector.Position(2);
     v_x = SimData.StateVector.Velocity(1);
     v_y = SimData.StateVector.Velocity(2);

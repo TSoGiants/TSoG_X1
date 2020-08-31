@@ -80,7 +80,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   Results.Pitch = SimData.StateVector.Orientation(1);
   Results.AoA   = SimData.Plane.AoA;
   Results.Time  = 0;
-  Results.FSM_state     = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
+  Results.FSM_state     = SimData.Plane.FSM_state; % plane starts on the ground (state 0 = on the ground)
   Results.PitchInput    = SimData.TestCase.GetPitch(SimData.Time);
   Results.ThrottleInput = SimData.TestCase.GetThrottle(SimData.Time);
   Results.BatteryCap    = SimData.Plane.BatteryCap;
@@ -93,7 +93,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
 
     % Integrate next step
     SimData = RK4_Integration(SimData);
-    %x = ThrustModel(SimData)  
+    
     % Save Results
     Results.X(i)     = SimData.StateVector.Position(1);
     Results.Y(i)     = SimData.StateVector.Position(2);
@@ -106,7 +106,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
     Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
     
-    #updates on battery for the next iteration
+    % updates on battery for the next iteration
     Results.BatteryCap(i)    = SimData.Plane.BatteryCap;
     Results.MaxBatteryCap(i) = SimData.Plane.MaxBatteryCap;
     

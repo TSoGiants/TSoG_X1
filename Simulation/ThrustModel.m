@@ -32,7 +32,7 @@ function [Thrust, B_dot] = ThrustModel(SimData)
     Thrust = 4.392399*10^(-8)*RPM*diameter^(3.5)*pitch^(-.5)*((4.23333*10^(-4))*RPM*pitch-airspeed);%calculate thrust (based on model in excel file)
   endif
     
-  #Calculations to update battery
+  % Calculations to update battery
   Power = Thrust * Avg_Volt * Max_Current; % Estimated power consumption assuming linear power usage based on Throttle
   if(voltage == 0)
     current = 0;

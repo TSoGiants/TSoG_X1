@@ -30,7 +30,7 @@ function SimData = RK4_Integration(SimData)
 
     % Reset the altitude when we are on the ground to prevent the plane from 
     % going very slightly below the ground due to the discreteness of the simulation
-    if SimData.Plane.FSM_state == 0
+    if SimData.Plane.FSM_state == FSMStates.OnGround
         SimData.StateVector.Position(2) = SimData.ground_height;
     endif
 

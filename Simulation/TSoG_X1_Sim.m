@@ -65,7 +65,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   SimData.Plane = Plane;
 
   % Get initial state of the Plane
-  SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
+  SimData.Plane.FSM_state = FSMStates.OnGround; % Assume the plane is on the ground before update
   SimData.Plane.FSM_state = GetFSMState(SimData);
 
   % Results used for plotting
@@ -102,7 +102,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
 
     % Check if object has crashed
-    if SimData.Plane.FSM_state == 3
+    if SimData.Plane.FSM_state == FSMStates.Crashed
         disp('Ground hit in ', num2str(Results.Time(end)), ' s');
         disp('Plane Crashed');
         break;

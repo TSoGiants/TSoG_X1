@@ -9,7 +9,7 @@ function SimData = RK4_Integration(SimData)
     k0.O_dot = [0];   % Orientation Derivative
     k0.B_dot = [0];   % Battery Drain
     k0.Time    = SimData.Time;
-    %x = ThrustModel(SimData)
+    
     % Calculate the k1 delta
     k1 = Derivatives(k0,SimData,0.5);
 

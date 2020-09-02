@@ -21,7 +21,7 @@ function kOut = Derivatives(kn, SimData, weight)
 
   [Thrust, B_dot] = ThrustModel(SimData);
 
-  F = Drag + Lift + Thrust; % Net force on the object Commented out b/c Thrust causes imaginary numbers
+  F = Drag + Lift + Thrust; % Net force on the object
 
   kOut.P_dot = SimData.StateVector.Velocity;
 

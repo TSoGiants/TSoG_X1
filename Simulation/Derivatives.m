@@ -6,6 +6,7 @@ function kOut = Derivatives(kn, SimData, weight)
   SimData.StateVector.Position    = SimData.StateVector.Position + kn.P_dot*dt*weight;
   SimData.StateVector.Velocity    = SimData.StateVector.Velocity + kn.V_dot*dt*weight;
   SimData.StateVector.Orientation = SimData.StateVector.Orientation + kn.O_dot*dt*weight;
+  SimData.Plane.BatteryCap        = max(0,SimData.Plane.BatteryCap + kn.B_dot*dt*weight);
 
   % Acceleration due to gravity
   Gravity = [0, -9.81];
@@ -18,7 +19,9 @@ function kOut = Derivatives(kn, SimData, weight)
 
   [Drag, Lift] = AerodynamicModel(SimData);
 
-  F = Drag + Lift; % Net force on the object
+  [Thrust, B_dot] = ThrustModel(SimData);
+
+  F = Drag + Lift + Thrust; % Net force on the object
 
   kOut.P_dot = SimData.StateVector.Velocity;
 
@@ -31,6 +34,8 @@ function kOut = Derivatives(kn, SimData, weight)
   endif
 
   kOut.O_dot = [0]; % TODO: Need to add proper math here (torque)
+
+  kOut.B_dot = B_dot;
 
   kOut.Time = SimData.Time + dt*weight;
 

@@ -10,9 +10,11 @@ function [Thrust, B_dot] = ThrustModel(SimData)
   diameter = 6; % Inches
   pitch = 3; % Inches (how far forward propeller moves in one rotation)
   Kv = 2280; % RPM per volt
-  Max_Volt = 4.2; % Volts
-  Min_Volt = 3.2; % Volts
-  Avg_Volt = (Max_Volt + Min_Volt)/2; % Volts
+
+  Num_Cells = 3; % Number of battery cells. x meaning xS.
+  Max_Volt  = 4.2 * Num_Cells; % Volts
+  Min_Volt  = 3.2 * Num_Cells; % Volts
+  Avg_Volt  = (Max_Volt + Min_Volt) / 2; % Volts
   Max_Current = 20; % Amps, estimated based on speed controller max (20 Amps)
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

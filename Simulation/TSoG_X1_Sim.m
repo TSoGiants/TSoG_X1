@@ -36,6 +36,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Plane.AeroRefArea = 1; % Cross sectional area used for calculation of aerodynamic drag and lift (m2)
     Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
     Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
+    
+    % Battery Information
+    Plane.MaxBatteryCap = 850; % mAh
+    Plane.BatteryCap = Plane.MaxBatteryCap; % Current Battery Cap
   endif
 
   % Set up the master SimData data structure for the simulation
@@ -44,7 +48,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   SimData.end_time = TestCase.StopTime; % Simulation end time (s)
   SimData.ground_height = 0;            % Height of the ground (m)
   SimData.Time = 0;                     % Simulation Time (s)
-
+  
   % Test Case sub-structure
   SimData.TestCase = TestCase;
   % Linear interpolation of Pitch Table
@@ -63,10 +67,10 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   Plane.AoA         = SimData.StateVector.Orientation(1) - flight_path_angle;
 
   SimData.Plane = Plane;
-
+  
   % Get initial state of the Plane
-  SimData.Plane.FSM_state = 0; % Assume the plane is on the ground before update
-  SimData.Plane.FSM_state = Get_FSM_State(SimData);
+  SimData.Plane.FSM_state = FSMStates.OnGround; % Assume the plane is on the ground before update
+  SimData.Plane.FSM_state = GetFSMState(SimData);
 
   % Results used for plotting
   Results.X     = SimData.StateVector.Position(1);
@@ -76,9 +80,11 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
   Results.Pitch = SimData.StateVector.Orientation(1);
   Results.AoA   = SimData.Plane.AoA;
   Results.Time  = 0;
-  Results.FSM_state     = SimData.Plane.FSM_state; #plane starts on the ground (state 0 = on the ground)
+  Results.FSM_state     = SimData.Plane.FSM_state; % plane starts on the ground (state 0 = on the ground)
   Results.PitchInput    = SimData.TestCase.GetPitch(SimData.Time);
   Results.ThrottleInput = SimData.TestCase.GetThrottle(SimData.Time);
+  Results.BatteryCap    = SimData.Plane.BatteryCap;
+  Results.MaxBatteryCap = SimData.Plane.MaxBatteryCap;
 
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   %                        Simulation Start
@@ -87,8 +93,7 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
 
     % Integrate next step
     SimData = RK4_Integration(SimData);
-
-
+    
     % Save Results
     Results.X(i)     = SimData.StateVector.Position(1);
     Results.Y(i)     = SimData.StateVector.Position(2);
@@ -100,9 +105,13 @@ function [ Results ] = TSoG_X1_Sim( TestCase, Plane )
     Results.FSM_state(i)     = SimData.Plane.FSM_state;
     Results.PitchInput(i)    = SimData.TestCase.GetPitch(SimData.Time);
     Results.ThrottleInput(i) = SimData.TestCase.GetThrottle(SimData.Time);
-
+    
+    % updates on battery for the next iteration
+    Results.BatteryCap(i)    = SimData.Plane.BatteryCap;
+    Results.MaxBatteryCap(i) = SimData.Plane.MaxBatteryCap;
+    
     % Check if object has crashed
-    if SimData.Plane.FSM_state == 3
+    if SimData.Plane.FSM_state == FSMStates.Crashed
         disp('Ground hit in ', num2str(Results.Time(end)), ' s');
         disp('Plane Crashed');
         break;

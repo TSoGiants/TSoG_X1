@@ -14,7 +14,7 @@ TestCase.Description = 'This test case is a template to edit and create new test
 % Establish Initial Conditions of the test
 % X - left/right, Y - up/down
 P0 = [0, 10]; % Initial position [X, Y] (m)
-V0 = [-2, 0]; % Initial velocity [Vx, Vy](m/s)
+V0 = [2, 0]; % Initial velocity [Vx, Vy](m/s)
 O0 = [0];     % Initial Orientation [Pitch] (degrees)
 
 StateVector_Initial = [P0 V0 O0];
@@ -48,6 +48,10 @@ Plane.AeroRefArea = 0.05; % Cross sectional area used for calculation of aerodyn
 Plane.Cl          = @(AoA) 2 * pi * deg2rad(AoA);           % Coefficient of lift function (dimensionless)
 Plane.Cd          = @(AoA) Plane.Cl(deg2rad(AoA))^2 + 0.05; % Coefficient of drag function (dimensionless)
 
+% Battery Information
+Plane.MaxBatteryCap = 850; % mAh
+Plane.BatteryCap = Plane.MaxBatteryCap; % Current Battery Cap
+
 %% Run the Test Case through the Aircraft Simulation
 Results = TSoG_X1_Sim(TestCase, Plane);
 
@@ -60,11 +64,11 @@ plot(Results.Time,Results.PitchInput)
 xlabel('Time (sec)')
 ylabel('Pitch (deg)')
 
-axis([0 max(time) 1.5*min(Results.PitchInput) 1.5*max(Results.PitchInput)])
+axis([0 max(Results.Time) 1.5*min(Results.PitchInput) 1.5*max(Results.PitchInput)])
 
 figure(3)
 plot(Results.Time,Results.ThrottleInput*100)
 xlabel('Time (sec)')
 ylabel('Throttle (%)')
 
-axis([0 max(time) -10 110])
+axis([0 max(Results.Time) -10 110])

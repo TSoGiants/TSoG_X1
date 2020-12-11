@@ -1,13 +1,13 @@
-function [pol,foil] = X1_Custom_xfoil(coord,alpha,Re,Mach,varargin)
+function [aero_data,foil] = X1_Custom_xfoil(chord,varargin)
 % Run XFoil and return the results.
 % [polar,foil] = xfoil(coord,alpha,Re,Mach,{extra commands})
 %
 % Xfoil.exe needs to be in the same directory as this m function.
 % For more information on XFoil visit these websites;
 %  http://web.mit.edu/drela/Public/web/xfoil
-% 
+%
 % Inputs:
-%    coord: Normalised foil co-ordinates (n by 2 array, of x & y 
+%    coord: Normalised foil co-ordinates (n by 2 array, of x & y
 %           from the TE-top passed the LE to the TE bottom)
 %           or a filename of the XFoil co-ordinate file
 %           or a NACA 4 or 5 digit descriptor (e.g. 'NACA0012')
@@ -15,13 +15,13 @@ function [pol,foil] = X1_Custom_xfoil(coord,alpha,Re,Mach,varargin)
 %       Re: Reynolds number (use Re=0 for inviscid mode)
 %     Mach: Mach number
 % extra commands: Extra XFoil commands
-%           The extra XFoil commands need to be proper xfoil commands 
+%           The extra XFoil commands need to be proper xfoil commands
 %           in a character array. e.g. 'oper/iter 150'
 %
-% The transition criterion Ncrit can be specified using the 
+% The transition criterion Ncrit can be specified using the
 % 'extra commands' option as follows,
 % foil = xfoil('NACA0012',10,1e6,0.2,'oper/vpar n 12')
-%  
+%
 %   Situation           Ncrit
 %   -----------------   -----
 %   sailplane           12-14
@@ -31,11 +31,11 @@ function [pol,foil] = X1_Custom_xfoil(coord,alpha,Re,Mach,varargin)
 %   dirty wind tunnel    4-8
 %
 % A flap deflection can be added using the following command,
-% 'gdes flap {xhinge} {yhinge} {flap_defelction} exec' 
+% 'gdes flap {xhinge} {yhinge} {flap_defelction} exec'
 %
 % Outputs:
 %  polar: structure with the polar coefficients (alpha,CL,CD,CDp,CM,
-%          Top_Xtr,Bot_Xtr) 
+%          Top_Xtr,Bot_Xtr)
 %   foil: stucture with the specific aoa values (s,x,y,UeVinf,
 %          Dstar,Theta,Cf,H,cpx,cp) each column corresponds to a different
 %          angle-of-attack.
@@ -60,228 +60,235 @@ function [pol,foil] = X1_Custom_xfoil(coord,alpha,Re,Mach,varargin)
 %    parse or output a polar.
 %    pol = xfoil('NACA0012',[-5:15],1e6,0.2,'oper iter 150','gdes flap 0.6 0 5 exec')
 %    % Plot the results
-%    figure; 
-%    plot(pol.alpha,pol.CL); xlabel('alpha [\circ]'); ylabel('C_L'); title(pol.name);  
+%    figure;
+%    plot(pol.alpha,pol.CL); xlabel('alpha [\circ]'); ylabel('C_L'); title(pol.name);
 %    figure; subplot(3,1,[1 2]);
 %    plot(foil(1).xcp(:,end),foil(1).cp(:,end)); xlabel('x');
-%    ylabel('C_p'); title(sprintf('%s @ %g\\circ',pol.name,foil(1).alpha(end))); 
+%    ylabel('C_p'); title(sprintf('%s @ %g\\circ',pol.name,foil(1).alpha(end)));
 %    set(gca,'ydir','reverse');
 %    subplot(3,1,3);
-%    I = (foil(1).x(:,end)<=1); 
+%    I = (foil(1).x(:,end)<=1);
 %    plot(foil(1).x(I,end),foil(1).y(I,end)); xlabel('x');
-%    ylabel('y'); axis('equal');   
+%    ylabel('y'); axis('equal');
 %
 
-% Some default values
-if ~exist('coord','var'), coord = 'NACA0012'; end
-if ~exist('alpha','var'), alpha = 0;    end
-if ~exist('Re','var'),    Re = 1e6;      end
-if ~exist('Mach','var'),  Mach = 0.2;    end
-Nalpha = length(alpha); % Number of alphas swept
+%% Get the
+[NACA_AF_1,NACA_AF_2,AF_ratio] = getNACAAFRatio(chord);
+
+%% Set the alpha range and increment
+alphas ={'-10','10'};
+alpha_inc = '.1';
+
+%% Calculate Reynolds Number (Re) and Mach Number at: 15 m/s (33.6 mph), Standard Day, 0 m altitude (sea level)
+
+% Reynolds number calculation
+rho = 1.225;        % kg/m^3, Density of Air
+mew = 1.81E-5;      % kg/(m*s), Dynamic viscosity of Air
+L   = chord/1000;   % m, Characteristic linear dimension
+v   = 15;            % m/s, Airspeed
+
+Re = num2str((rho*v*L)/mew);
+
+% Speed of Sound Calculation
+gamma = 1.4;        % none, Adiabatic Index
+R     = 287;        % m^2/(K*s^2), Gas Constant
+T     = 15+273.15;  % K, Absolute Air Temperature
+
+a = sqrt(gamma*R*T); % m/s, Speed of Sound
+
+% Mach Number Calculation
+Mach = num2str(v/a);    % none, Mach Number
+
+%% Setup file and names
 % default foil name
-foil_name = mfilename; 
+foil_name = 'xfoil';
 
 % default filenames
-wd = fileparts(which(mfilename)); % working directory, where xfoil.exe needs to be
-fname = mfilename;
+wd = fileparts(which('xfoil')); % working directory, where xfoil.exe needs to be
+fname = 'xfoil';
 file_coord= [foil_name '.foil'];
-
-% Save coordinates
-if ischar(coord)  % Either a NACA string or a filename
-  if isempty(regexpi(coord,'^NACA *[0-9]{4,5}$')) % Check if a NACA string
-%     foil_name = coord; % some redundant code removed to go green ( ~isempty if uncommented)
-%   else             % Filename supplied
-    % set coord file
-    file_coord = coord;
-  end 
-else
-  % Write foil ordinate file
-  if exist(file_coord,'file'),  delete(file_coord); end
-  fid = fopen(file_coord,'w');
-  if (fid<=0)
-    error([mfilename ':io'],'Unable to create file %s',file_coord);
-  else
-    fprintf(fid,'%s\n',foil_name);
-    fprintf(fid,'%9.5f   %9.5f\n',coord');
-    fclose(fid);
-  end
-end
 
 % Write xfoil command file
 fid = fopen([wd filesep fname '.inp'],'w');
 if (fid<=0)
-  error([mfilename ':io'],'Unable to create xfoil.inp file');
-else
-  if ischar(coord)
-    if ~isempty(regexpi(coord,'^NACA *[0-9]{4,5}$')) % NACA string supplied
-      fprintf(fid,'naca %s\n',coord(5:end));
-    else  % filename supplied
-      fprintf(fid,'load %s\n',file_coord);
-    end
-  else % Coordinates supplied, use the default filename
-    fprintf(fid,'load %s\n',file_coord);
-  end
-  % Extra Xfoil commands
-  for ii = 1:length(varargin)
-    txt = varargin{ii};
-    txt = regexprep(txt,'[ \\\/]+','\n');
-    fprintf(fid,'%s\n\n',txt);
-  end
-  fprintf(fid,'\n\noper\n');
-  % set Reynolds and Mach
-  fprintf(fid,'re %g\n',Re);
-  fprintf(fid,'mach %g\n',Mach);
-  
-  % Switch to viscous mode
-  if (Re>0)
-    fprintf(fid,'visc\n');  
-  end
+    error([mfilename ':io'],'Unable to create xfoil.inp file');
+end
 
-  % Polar accumulation 
-  fprintf(fid,'pacc\n\n\n');
-  % Xfoil alpha calculations
-  [file_dump, file_cpwr] = deal(cell(1,Nalpha)); % Preallocate cell arrays
-  
-  for ii = 1:Nalpha
-    % Individual output filenames
-    file_dump{ii} = sprintf('%s_a%06.3f_dump.dat',fname,alpha(ii));
-    file_cpwr{ii} = sprintf('%s_a%06.3f_cpwr.dat',fname,alpha(ii));
-    % Commands
-    fprintf(fid,'alfa %g\n',alpha(ii));
-    fprintf(fid,'dump %s\n',file_dump{ii});
-    fprintf(fid,'cpwr %s\n',file_cpwr{ii});
-  end
-  % Polar output filename
-  file_pwrt = sprintf('%s_pwrt.dat',fname);
-  fprintf(fid,'pwrt\n%s\n',file_pwrt);
-  fprintf(fid,'plis\n');
-  fprintf(fid,'\nquit\n');
-  fclose(fid);
+%% Write NACA airfoil blending commands
+% Commands for first airfoil
+fprintf(fid,'NACA %s\n',NACA_AF_1);
+file1 = ['naca_' NACA_AF_1 '.dat'];
+if exist(file1,'file')
+    delete(file1);
+end
+fprintf(fid,'PSAV %s\n',file1);
 
-  % execute xfoil
-  cmd = sprintf('cd %s && xfoil.exe < xfoil.inp > xfoil.out',wd);
-  [status,result] = system(cmd);
-  if (status~=0)
+% Commands for second airfoil
+fprintf(fid,'NACA %s\n',NACA_AF_2);
+file2 = ['naca_' NACA_AF_2 '.dat'];
+if exist(file2,'file')
+    delete(file2);
+end
+fprintf(fid,'PSAV %s\n',file2);
+
+% Commands for INTE
+fprintf(fid,'INTE\nF\n');
+fprintf(fid,'naca_%s.dat\nF\n',NACA_AF_1);
+fprintf(fid,'naca_%s.dat\n%s\n',NACA_AF_2,AF_ratio);
+fprintf(fid,'blended_%s_%s\n',NACA_AF_1,NACA_AF_2);
+
+% Command to make new blended airfoil the current airfoil
+fprintf(fid,'PCOP\n');
+file3 = ['blended_' NACA_AF_1 '_' NACA_AF_2 '.dat'];
+if exist(file3,'file')
+    delete(file3);
+end
+fprintf(fid,'PSAV %s\n',file3);
+
+% Commands to change paneling to larger value
+fprintf(fid,'PPAR\nN\n300\n\n\n');
+
+% Commands to start operation set Re, Mach, and iteration limit
+% NOTE: MACH is not changed and left at 0, doesn't converge otherwise
+fprintf(fid,'OPER\nVISC\n%s\nITER\n100\n',Re);
+
+% Command to start polar accumulation
+fprintf(fid,'PACC\n\n\n');
+
+% Command to run sequence of alphas
+fprintf(fid,'ASEQ %s %s %s\n',alphas{1},alphas{2},alpha_inc);
+
+% Command to write polar output to file
+if exist('xfoil_polar.dat','file')
+    delete('xfoil_polar.dat');
+end
+fprintf(fid,'PWRT\nxfoil_polar.dat\nplis\n\n');
+
+% Command to quit
+fprintf(fid,'quit\n');
+fclose(fid);
+
+% Execute xfoil using generated input file xfoil.inp
+cmd = sprintf('cd %s && xfoil.exe < xfoil.inp > xfoil.out',wd);
+[status,result] = system(cmd);
+if (status~=0)
     disp(result);
     error([mfilename ':system'],'Xfoil execution failed! %s',cmd);
-  end
-
-  % Read dump file
-  %    #    s        x        y     Ue/Vinf    Dstar     Theta      Cf       H
-  jj = 0;
-  ind = 1;
-% Note that 
-foil.alpha = zeros(1,Nalpha); % Preallocate alphas
-% Find the number of panels with an inital run
-only = nargout; % Number of outputs checked. If only one left hand operator then only do polar
-
-if only >1 % Only do the foil calculations if more than one left hand operator is specificed
-  for ii = 1:Nalpha
-    jj = jj + 1;
-
-    fid = fopen([wd filesep file_dump{ii}],'r');
-    if (fid<=0)
-      error([mfilename ':io'],'Unable to read xfoil output file %s',file_dump{ii});
-    else
-      D = textscan(fid,'%f%f%f%f%f%f%f%f','Delimiter',' ','MultipleDelimsAsOne',true,'CollectOutput',1,'HeaderLines',1);
-      fclose(fid);
-      delete([wd filesep file_dump{ii}]);
-      
-      if ii == 1 % Use first run to determine number of panels (so that NACA airfoils work without vector input)
-         Npanel = length(D{1}); % Number of airfoil panels pulled from the first angle tested
-         % Preallocate Outputs
-         [foil.s, foil.x, foil.y, foil.UeVinf, foil.Dstar, foil.Theta, foil.Cf, foil.H] = deal(zeros(Npanel,Nalpha));  
-      end
-      
-      % store data
-      if ((jj>1) && (size(D{1},1)~=length(foil(ind).x)) && sum(abs(foil(ind).x(:,1)-size(D{1},1)))>1e-6 )
-        ind = ind + 1;
-        jj = 1;
-      end
-      foil.s(:,jj) = D{1}(:,1);
-      foil.x(:,jj) = D{1}(:,2);
-      foil.y(:,jj) = D{1}(:,3);
-      foil.UeVinf(:,jj) = D{1}(:,4);
-      foil.Dstar(:,jj) = D{1}(:,5);
-      foil.Theta(:,jj) = D{1}(:,6);
-      foil.Cf(:,jj) = D{1}(:,7);
-      foil.H (:,jj)= D{1}(:,8);
-    end
-
-    foil.alpha(1,jj) = alpha(jj);
-
-    % Read cp file
-    fid = fopen([wd filesep file_cpwr{ii}],'r');
-    if (fid<=0)
-      error([mfilename ':io'],'Unable to read xfoil output file %s',file_cpwr{ii});
-    else
-      C = textscan(fid, '%10f%9f%f', 'Delimiter', '', 'WhiteSpace', '', 'HeaderLines' ,3, 'ReturnOnError', false);
-      fclose(fid);
-      delete([wd filesep file_cpwr{ii}]);
-      % store data
-      if ii == 1 % Use first run to determine number of panels (so that NACA airfoils work without vector input)
-         NCp = length(C{1}); % Number of points Cp is listed for pulled from the first angle tested
-         % Preallocate Outputs
-         [foil.xcp, foil.cp] = deal(zeros(NCp,Nalpha));  
-         foil.xcp = C{1}(:,1);
-      end      
-      foil.cp(:,jj) = C{3}(:,1);
-    end
-  end
 end
 
-if only <= 1% clear files for default run
-  for ii=1:Nalpha % Clear out the xfoil dump files not used
-      delete([wd filesep file_dump{ii}]);
-      delete([wd filesep file_cpwr{ii}]);
-  end 
+% Read in blended airfoil data
+foil = readtable(file3);
+foil.Properties.VariableNames = {'X','Y'};
+
+% Read in aerodynamic data
+aero_data = importfile('xfoil_polar.dat');
+
+end
+%% Sub Functions
+
+function [NACA_AF_1,NACA_AF_2,AF_ratio] = getNACAAFRatio(chord)
+% Since NACA 4 digit airfoils only have 1 digit precision for the first two
+% parameters and 2 digit precision for the third parameter, I have created
+% a function in order to find two 4-Digit airfoils and determine the ratio
+% between the two to use Xfoil's INTE function in order to interpret the
+% airfoil in between.
+% chord is in  mm, the chord length
+t = 5;  % mm, the thickness of the board
+
+% Calculate desired NACA values for the 3 parameters
+NACA_Digits(1) = 100*(0.5*t)/chord; % Max camber of the airfoil
+NACA_Digits(2) = 10*0.25;      % The max camber position is always set to 25% of the chord
+NACA_Digits(3) = 100*(3*t)/chord;   % The max thickness is always 3 times the board's thickness
+
+NACA_AF_1 = '';
+NACA_AF_2 = '';
+
+for i=1:length(NACA_Digits)
+    % Convert desired NACA digit to whole numbers
+    digit_lower = floor(NACA_Digits(i));
+    digit_upper = ceil(NACA_Digits(i));
+    
+    % Calculate the ratio for each desired digit
+    diff1 = NACA_Digits(i) - digit_lower;
+    if digit_upper > digit_lower
+        ratio(i) = diff1/(digit_upper - digit_lower);
+    else
+        ratio(i) = 0.5;
+    end
+    
+    % Write digits to output
+    if i < 3
+        NACA_AF_1 = [NACA_AF_1 num2str(digit_lower)];
+        NACA_AF_2 = [NACA_AF_2 num2str(digit_upper)];
+    else
+        NACA_AF_1 = [NACA_AF_1 num2str(digit_lower,'%02.f')];
+        NACA_AF_2 = [NACA_AF_2 num2str(digit_upper,'%02.f')];
+    end
 end
 
-  % Read polar file
-  %  
-  %       XFOIL         Version 6.96
-  %  
-  % Calculated polar for: NACA 0012                                       
-  %  
-  % 1 1 Reynolds number fixed          Mach number fixed         
-  %  
-  % xtrf =   1.000 (top)        1.000 (bottom)  
-  % Mach =   0.000     Re =     1.000 e 6     Ncrit =  12.000
-  %  
-  %   alpha    CL        CD       CDp       CM     Top_Xtr  Bot_Xtr
-  %  ------ -------- --------- --------- -------- -------- --------
-  fid = fopen([wd filesep file_pwrt],'r');
-  if (fid<=0)
-    error([mfilename ':io'],'Unable to read xfoil polar file %s',file_pwrt);
-  else
-    % Header
-    % Calculated polar for: NACA 0012 
-    P = textscan(fid,' Calculated polar for: %[^\n]','Delimiter',' ','MultipleDelimsAsOne',true,'HeaderLines',3);
-    pol.name = strtrim(P{1}{1});
-    % xtrf =   1.000 (top)        1.000 (bottom)  
-    P = textscan(fid, '%*s%*s%f%*s%f%s%s%s%s%s%s', 1, 'Delimiter', ' ', 'MultipleDelimsAsOne', true, 'HeaderLines', 2, 'ReturnOnError', false);
-    pol.xtrf_top = P{1}(1);
-    pol.xtrf_bot = P{2}(1);
-    % Mach =   0.000     Re =     1.000 e 6     Ncrit =  12.000
-    P = textscan(fid, '%*s%*s%f%*s%*s%f%*s%f%*s%*s%f', 1, 'Delimiter', ' ', 'MultipleDelimsAsOne', true, 'HeaderLines', 0, 'ReturnOnError', false);
-    pol.Re = P{2}(1) * 10^P{3}(1);
-    pol.Ncrit = P{4}(1);
+% Get the desired ratio using the average of the 3 parameters
+AF_ratio = num2str(mean(ratio));
+end
 
-    % data
-    P = textscan(fid, '%f%f%f%f%f%f%f%*s%*s%*s%*s', 'Delimiter',  ' ', 'MultipleDelimsAsOne', true, 'HeaderLines' , 4, 'ReturnOnError', false);
-    fclose(fid);
-    delete([wd filesep file_pwrt]);
-    % store data
-    pol.alpha = P{1}(:,1);
-    pol.CL  = P{2}(:,1);
-    pol.CD  = P{3}(:,1);
-    pol.CDp = P{4}(:,1);
-    pol.Cm  = P{5}(:,1);
-    pol.Top_xtr = P{6}(:,1);
-    pol.Bot_xtr = P{7}(:,1);
-  end
-  if length(pol.alpha) ~= Nalpha % Check if xfoil failed to converge 
-     warning('One or more alpha values failed to converge. Last converged was alpha = %f. Rerun with ''oper iter ##'' command.\n', pol.alpha(end)) 
-  end
-  
+% This function is generated using the import data function
+function xfoilpolar = importfile(filename, startRow, endRow)
+%IMPORTFILE Import numeric data from a text file as a matrix.
+%   XFOILPOLAR = IMPORTFILE(FILENAME) Reads data from text file FILENAME
+%   for the default selection.
+%
+%   XFOILPOLAR = IMPORTFILE(FILENAME, STARTROW, ENDROW) Reads data from
+%   rows STARTROW through ENDROW of text file FILENAME.
+%
+% Example:
+%   xfoilpolar = importfile('xfoil_polar.dat', 13, 42);
+%
+%    See also TEXTSCAN.
+
+% Auto-generated by MATLAB on 2020/12/07 23:11:23
+
+%% Initialize variables.
+if nargin<=2
+    startRow = 13;
+    endRow = inf;
+end
+
+%% Format for each line of text:
+%   column1: double (%f)
+%	column2: double (%f)
+%   column3: double (%f)
+%	column4: double (%f)
+%   column5: double (%f)
+%	column6: double (%f)
+%   column7: double (%f)
+% For more information, see the TEXTSCAN documentation.
+formatSpec = '%8f%9f%10f%10f%9f%9f%f%[^\n\r]';
+
+%% Open the text file.
+fileID = fopen(filename,'r');
+
+%% Read columns of data according to the format.
+% This call is based on the structure of the file used to generate this
+% code. If an error occurs for a different file, try regenerating the code
+% from the Import Tool.
+dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', '', 'WhiteSpace', '', 'TextType', 'string', 'HeaderLines', startRow(1)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+for block=2:length(startRow)
+    frewind(fileID);
+    dataArrayBlock = textscan(fileID, formatSpec, endRow(block)-startRow(block)+1, 'Delimiter', '', 'WhiteSpace', '', 'TextType', 'string', 'HeaderLines', startRow(block)-1, 'ReturnOnError', false, 'EndOfLine', '\r\n');
+    for col=1:length(dataArray)
+        dataArray{col} = [dataArray{col};dataArrayBlock{col}];
+    end
+end
+
+%% Close the text file.
+fclose(fileID);
+
+%% Post processing for unimportable data.
+% No unimportable data rules were applied during the import, so no post
+% processing code is included. To generate code which works for
+% unimportable data, select unimportable cells in a file and regenerate the
+% script.
+
+%% Create output variable
+xfoilpolar = table(dataArray{1:end-1}, 'VariableNames', {'alpha','CL','CD','CDp','CM','Top_Xtr','Bot_Xtr'});
+
 end

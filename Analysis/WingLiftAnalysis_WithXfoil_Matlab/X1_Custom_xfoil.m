@@ -76,7 +76,7 @@ function [aero_data,foil] = X1_Custom_xfoil(chord,varargin)
 [NACA_AF_1,NACA_AF_2,AF_ratio] = getNACAAFRatio(chord);
 
 %% Set the alpha range and increment
-alphas ={'-10','10'};
+alphas ={'0','10'};
 alpha_inc = '.1';
 
 %% Calculate Reynolds Number (Re) and Mach Number at: 15 m/s (33.6 mph), Standard Day, 0 m altitude (sea level)
@@ -146,11 +146,12 @@ end
 fprintf(fid,'PSAV %s\n',file3);
 
 % Commands to change paneling to larger value
-fprintf(fid,'PPAR\nN\n300\n\n\n');
+fprintf(fid,'PPAR\nN\n500\n\n\n');
 
 % Commands to start operation set Re, Mach, and iteration limit
 % NOTE: MACH is not changed and left at 0, doesn't converge otherwise
 fprintf(fid,'OPER\nVISC\n%s\nITER\n100\n',Re);
+% fprintf(fid,'OPER\nITER\n100\n');
 
 % Command to start polar accumulation
 fprintf(fid,'PACC\n\n\n');

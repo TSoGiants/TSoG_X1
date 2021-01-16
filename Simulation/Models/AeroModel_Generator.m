@@ -15,7 +15,7 @@ function [Gen_AeroModel] = AeroModel_Generator(CL_Delegate, CD_Delegate, RefSurf
   %     CD_Delegate = @(alpha) CL_Delegate(alpha)^2 + 0.05;
   %     AeroModel  = AeroModel_Generator(CL_Delegate,CD_Delegate,2);
   
-  Gen_AerodynamicModel = @AerodynamicModel;
+  Gen_AeroModel = @AerodynamicModel;
   
   function [Lift, Drag] = AerodynamicModel(Velocity, Orientation, Altitude)
   

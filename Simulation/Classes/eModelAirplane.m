@@ -16,7 +16,7 @@ classdef eModelAirplane < Vehicle
       
     endfunction
     
-    function setAeroModel(eMdlA,CL_Delegate,CD_Delegate,RefSurfArea)
+    function eMdlA = setAeroModel(eMdlA,CL_Delegate,CD_Delegate,RefSurfArea)
       AeroModel = AeroModel_Generator(CL_Delegate,CD_Delegate,RefSurfArea);
       eMdlA.AeroModel = AeroModel;
     endfunction

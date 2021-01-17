@@ -39,7 +39,7 @@ classdef Vehicle
       SV = Vh.stateVector;
     endfunction
     
-    function setStateVector(Vh,stateVector_NEW)
+    function Vh = setStateVector(Vh,stateVector_NEW)
       if size_equal(Vh.stateVector,stateVector_NEW)
         Vh.stateVector = stateVector_NEW
       else

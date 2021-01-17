@@ -49,7 +49,7 @@ function [Gen_AeroModel] = AeroModel_Generator(CL_Delegate, CD_Delegate, RefSurf
     
     % Calculate the direction of the lift force
     %     Lift is 90 deg rotated clockwise from drag
-    Lift_dir = Drag_dir * [0 -sind(90); sind(90) 0]; % Lift direction = drag direction rotated 90 deg
+    Lift_dir = Drag_dir' * [0 -sind(90); sind(90) 0]; % Lift direction = drag direction rotated 90 deg
     
     % Get the Drag and Lift force in vector form
     Drag = Drag_dir*Drag_force;

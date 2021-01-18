@@ -15,9 +15,14 @@ classdef Vehicle
 
   methods
     % Create Vehicle Object
+    %   Inputs:
+    %     Name = Name of Vehicle
+    %     init_stateVector = Initial State of Vehicle
+    %     N_Ctrls = Number of Control Inputs
+    %     modelArray = Array of Models that affect the Vehicle
     function Vh = Vehicle(Name,init_stateVector,N_Ctrls,modelArray)
       if (nargin != 4)
-        error('Vehicle must have at least a Name and initial State Vector')
+        error('Vehicle must have at least: Name, initial State Vector, Number of Control Inputs, and a Model Array')
       else
         Vh.Name = Name;
         Vh.stateVector = init_stateVector;
@@ -30,22 +35,21 @@ classdef Vehicle
     function Vh = addModel(Vh,model)
       Vh.modelArray{end+1} = model;
     endfunction
-
-    % Get functions for the stateVector components
-    function P = getPosition(Vh)
-      P = Vh.stateVector(Vh.SV_Index.P);
-    endfunction
-
-    function V = getVelocity(Vh)
-      V = Vh.stateVector(Vh.SV_Index.V);
-    endfunction
-
-    function M = getMass(Vh)
-      M = Vh.stateVector(Vh.SV_Index.M);
-    endfunction
-
-    function SV = getStateVector(Vh)
-      SV = Vh.stateVector;
+    
+    % Method to get stateVector or its components
+    function Data = getStateVector(Vh,SV_Index)
+      % SV_Index must be an integer or integer array
+      % Highly recommended to use the StateVector_Index enumeration class to get
+      % consistently correct data from the stateVector
+      if nargin == 1
+        % If no SV_Index is provided, output the whole stateVector
+        Data = Vh.stateVector;
+      elseif nargin == 2
+        % If SV_Index is provided, output the desired components
+        Data = Vh.stateVector(index);
+      else
+        error('Too Many Arguments for Method')
+      endif      
     endfunction
 
     % Method to set the stateVector which checks to make sure the size matches
@@ -65,7 +69,9 @@ classdef Vehicle
         error(['Size of controlsVector does not match size of ' Vh.Name '''s controlsVector'])
       endif
     endfunction
-%
+    
+    % Method to get the Derivatives of the models with optional input stateVector or controlsVector
+    % NOTE: All model's outputs must be the same size
     function Dervs = getDerivatives(Vh,stateVector = Vh.stateVector,controlsVector = Vh.controlsVector)
       Dervs = zeros(length(stateVector),1);
       for i = 1:length(Vh.modelArray)

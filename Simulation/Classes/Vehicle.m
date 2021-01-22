@@ -24,6 +24,9 @@ classdef Vehicle
       if (nargin != 4)
         error('Vehicle must have at least: Name, initial State Vector, Number of Control Inputs, and a Model Array')
       else
+        if init_stateVector(Vh.SV_Index.M) <= 0
+          error('Mass property of State Vector cannot be less than or equal to 0')
+        endif
         Vh.Name = Name;
         Vh.stateVector = init_stateVector;
         Vh.controlsVector = zeros(N_Ctrls,1);
@@ -46,7 +49,21 @@ classdef Vehicle
         Data = Vh.stateVector;
       elseif nargin == 2
         % If SV_Index is provided, output the desired components
-        Data = Vh.stateVector(index);
+        Data = Vh.stateVector(SV_Index);
+      else
+        error('Too Many Arguments for Method')
+      endif      
+    endfunction
+    
+    % Method to get controlsVector or its components
+    function Data = getControlsVector(Vh,CV_Index)
+      % Index must be an integer or integer array
+      if nargin == 1
+        % If no Index is provided, output the whole controlsVector
+        Data = Vh.controlsVector;
+      elseif nargin == 2
+        % If Index is provided, output the desired components
+        Data = Vh.controlsVector(CV_Index);
       else
         error('Too Many Arguments for Method')
       endif      
@@ -55,7 +72,7 @@ classdef Vehicle
     % Method to set the stateVector which checks to make sure the size matches
     function Vh = setStateVector(Vh,stateVector_NEW)
       if size_equal(Vh.stateVector,stateVector_NEW)
-        Vh.stateVector = stateVector_NEW
+        Vh.stateVector = stateVector_NEW;
       else
         error(['Size of stateVector does not match size of ' Vh.Name '''s stateVector'])
       endif
@@ -64,7 +81,7 @@ classdef Vehicle
     % Method to set the controlsVector which checks to make sure the size matches
     function Vh = setControlsVector(Vh,controlsVector_NEW)
       if size_equal(Vh.controlsVector,controlsVector_NEW)
-        Vh.controlsVector = controlsVector_NEW
+        Vh.controlsVector = controlsVector_NEW;
       else
         error(['Size of controlsVector does not match size of ' Vh.Name '''s controlsVector'])
       endif
@@ -74,6 +91,7 @@ classdef Vehicle
     % NOTE: All model's outputs must be the same size
     function Dervs = getDerivatives(Vh,stateVector = Vh.stateVector,controlsVector = Vh.controlsVector)
       Dervs = zeros(length(stateVector),1);
+      Dervs(Vh.SV_Index.P) = stateVector(Vh.SV_Index.V);
       for i = 1:length(Vh.modelArray)
         model = Vh.modelArray{i};
         Dervs = Dervs + model(stateVector,controlsVector);

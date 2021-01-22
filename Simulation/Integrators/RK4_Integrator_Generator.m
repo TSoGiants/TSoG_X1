@@ -3,7 +3,7 @@ function Gen_RK4_Integrator = RK4_Integrator_Generator(dt)
   Gen_RK4_Integrator = @RK4_Integration;
   
   % 4th Order Runge-Kutta (RK4) integration
-  function next_state = RK4_Integration(Vh,stateVector,controlsVector)
+  function next_state = RK4_Integration(Vh,stateVector = Vh.getStateVector(),controlsVector = Vh.getControlsVector)
     % Calculate the k1 delta
     k1 = Vh.getDerivatives(stateVector,controlsVector);
     

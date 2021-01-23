@@ -5,7 +5,7 @@
 % (https://savannah.gnu.org/bugs/?44582) so constant properties are used instead.
 
 classdef StateVector_Index
-	properties (Constant)
+  properties (Constant)
     P_X = 1 % Position, X
     P_Y = 2 % Position, Y
     P_Z = 3 % Position, Z
@@ -20,5 +20,5 @@ classdef StateVector_Index
     O   = [7,8,9] % Orientation, Vector [Pitch,Roll,Yaw]
     M   = 10 % Mass
     B_Cap = 11 % Battery Capacity
-	end
+  end
 end

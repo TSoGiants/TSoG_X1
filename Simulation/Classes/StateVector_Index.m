@@ -1,5 +1,5 @@
-%% State Vector Indecies
-% This is an enumeration of all indecies of a Vehicle State Vector
+%% State Vector Indices
+% This is an enumeration of all Indices of a Vehicle State Vector
 
 % Note: enumerations are currently not implemented in Octave
 % (https://savannah.gnu.org/bugs/?44582) so constant properties are used instead.

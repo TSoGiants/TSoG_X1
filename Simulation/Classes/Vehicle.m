@@ -21,17 +21,13 @@ classdef Vehicle
     %     N_Ctrls = Number of Control Inputs
     %     modelArray = Array of Models that affect the Vehicle
     function Vh = Vehicle(Name,init_stateVector,N_Ctrls,modelArray)
-      if (nargin != 4)
-        error('Vehicle must have at least: Name, initial State Vector, Number of Control Inputs, and a Model Array')
-      else
-        if init_stateVector(Vh.SV_Index.M) <= 0
-          error('Mass property of State Vector cannot be less than or equal to 0')
-        endif
-        Vh.Name = Name;
-        Vh.stateVector = init_stateVector;
-        Vh.controlsVector = zeros(N_Ctrls,1);
-        Vh.modelArray = modelArray;
+      if init_stateVector(Vh.SV_Index.M) <= 0
+        error('Mass property of State Vector cannot be less than or equal to 0')
       endif
+      Vh.Name = Name;
+      Vh.stateVector = init_stateVector;
+      Vh.controlsVector = zeros(N_Ctrls,1);
+      Vh.modelArray = modelArray;
     endfunction
 
     % Method to add a Model to the modelArray

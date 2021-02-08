@@ -66,7 +66,7 @@ function [Gen_AeroModel] = AeroModel_Generator(CL_Delegate, CD_Delegate, RefSurf
 
     % Create a Derivatives array
     Derivatives = zeros(length(input_stateVector),1);
-    
+
     % Add Derivatives calculation to the Velocity (currently only for 2 axes, X and Y)
     Derivatives([SV_Index.V_X,SV_Index.V_Y]) = AeroForces/Mass;
 

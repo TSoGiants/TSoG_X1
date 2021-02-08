@@ -20,6 +20,6 @@ function [Gen_LinearBatteryModel] = LinearBatteryModel_Generator(MinVoltage, Max
   function Voltage = LinearBatteryModel(Capacity)
     SV_Index = StateVector_Index;
 
-    return interp1([0, MaxCapacity], [MinVoltage, MaxVoltage], Capacity);
+    Voltage = interp1([0, MaxCapacity], [MinVoltage, MaxVoltage], Capacity);
   endfunction
 endfunction

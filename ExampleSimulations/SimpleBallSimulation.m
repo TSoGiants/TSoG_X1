@@ -52,17 +52,17 @@ init_stateVector(SV_I.M) = 1;
 % The Ball will start on the Y axis
 init_stateVector(SV_I.P_X) = 0;
 
-% The Ball starts 10m above the ground
-init_stateVector(SV_I.P_Y) = 10;
+% The Ball starts 20m above the ground
+init_stateVector(SV_I.P_Y) = 20;
 
 % Next we set the velocity of the ball (again, in cartesian coordinates,
 % meters/sec).
 
 % The Ball will start traveling to the right at a speed of 5 m/s
-init_stateVector(SV_I.V_X) = 5;
+init_stateVector(SV_I.V_X) = 10;
 
 % The Ball will start traveling to up at a speed of 5 m/s
-init_stateVector(SV_I.V_Y) = 5;
+init_stateVector(SV_I.V_Y) = 10;
 
 % We can set the number of control parameters for the Vehicle. Since this is a
 % simple ball, it will have no control parameters and thus can be left as zero.
@@ -88,7 +88,7 @@ simpleBall = Vehicle(Name,init_stateVector,N_Ctrls,{ballGravityModel});
 % Next, we will set up the integrator for the simulation using the
 % RK4_Integrator found in the SimulationTools/Integrator/ Directory
 % For this simulation we shall use a time step of 0.1 seconds
-dt = 0.1; % seconds
+dt = 0.05; % seconds
 RK4_Integrator = RK4_Integrator_Generator(dt);
 
 % We are now ready to start our simulation. In order to analyze the simulation,
@@ -151,3 +151,8 @@ hold on
 plot(SimData.Time,SimData.V_Y)
 legend ("Velocity X-axis","Velocity, Y-axis");
 axis([0,max(SimData.Time),min(SimData.V_Y)-5,max(SimData.V_Y)+5])
+hold off
+
+% Feel free to mess around with the initial conditions of the ball to see how it
+% behaves! (Just remember to keep the ball above the ground when it starts)
+

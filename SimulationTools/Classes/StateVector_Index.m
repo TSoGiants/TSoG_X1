@@ -20,5 +20,6 @@ classdef StateVector_Index
     O   = [7,8,9] % Orientation, Vector [Pitch,Roll,Yaw]
     M   = 10 % Mass
     B_Cap = 11 % Battery Capacity
+    numStates = 11; % Total number of states
   end
 end

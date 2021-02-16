@@ -1,0 +1,8 @@
+A.INPUT1 = 1;
+A.INPUT2 = 2;
+
+TEST_FUNC(A)
+
+TEST_FUNC(A,3)
+
+

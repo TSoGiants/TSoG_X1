@@ -1,0 +1,12 @@
+PSAV 020
+PSAV naca_020.dat
+NACA 131
+PSAV naca_131.dat
+INTE
+f
+naca_020.dat
+F
+naca_131.dat
+0.1725
+blended_020_131.dat
+PCOP

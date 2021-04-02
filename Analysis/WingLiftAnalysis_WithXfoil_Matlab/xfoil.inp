@@ -1,0 +1,32 @@
+NACA 1210
+PSAV naca_1210.dat
+NACA 2310
+PSAV naca_2310.dat
+INTE
+F
+naca_1210.dat
+F
+naca_2310.dat
+0.55556
+blended_1210_2310
+PCOP
+PSAV blended_1210_2310.dat
+PPAR
+N
+500
+
+
+OPER
+VISC
+152279.0055
+ITER
+100
+PACC
+
+
+ASEQ 0 10 .1
+PWRT
+xfoil_polar.dat
+plis
+
+quit
